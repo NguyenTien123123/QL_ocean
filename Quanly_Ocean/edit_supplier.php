@@ -16,6 +16,33 @@ if (isset($_GET['id'])) {
         echo "Nhà cung cấp không tồn tại!";
         exit();
     }
+
+    // Xử lý khi form được gửi
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Lấy dữ liệu từ form
+        $tenNCC = $_POST['TenNCC'];
+        $diaChi = $_POST['DiaChi'];
+        $sdt = $_POST['SDT'];
+        $email = $_POST['Email'];
+        $website = $_POST['Website'];
+
+        // Cập nhật thông tin nhà cung cấp
+        $updateQuery = "UPDATE Nhacungcap SET TenNCC = :TenNCC, DiaChi = :DiaChi, SDT = :SDT, Email = :Email, Website = :Website WHERE NCCID = :NCCID";
+        $stmtUpdate = $conn->prepare($updateQuery);
+        $stmtUpdate->bindParam(':TenNCC', $tenNCC);
+        $stmtUpdate->bindParam(':DiaChi', $diaChi);
+        $stmtUpdate->bindParam(':SDT', $sdt);
+        $stmtUpdate->bindParam(':Email', $email);
+        $stmtUpdate->bindParam(':Website', $website);
+        $stmtUpdate->bindParam(':NCCID', $id);
+
+        // Thực hiện cập nhật
+        if ($stmtUpdate->execute()) {
+            echo "<script>alert('Cập nhật nhà cung cấp thành công!'); window.location.href='quanly_nhacungcap.php';</script>";
+        } else {
+            echo "<script>alert('Cập nhật nhà cung cấp thất bại!');</script>";
+        }
+    }
 }
 ?>
 
@@ -146,7 +173,7 @@ if (isset($_GET['id'])) {
 
         <div id="content">
             <h2>Sửa Nhà Cung Cấp</h2>
-            <form method="POST" action="edit_supplier.php?id=<?= $supplier['NCCID'] ?>">
+            <form method="POST" action="">
                 <!-- Lưu ID nhà cung cấp trong trường hidden -->
                 <input type="hidden" name="NCCID" value="<?= $supplier['NCCID'] ?>">
 

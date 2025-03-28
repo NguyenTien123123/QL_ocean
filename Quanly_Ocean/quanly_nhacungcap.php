@@ -102,6 +102,14 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Phần danh sách nhà cung cấp -->
     <div class="left-panel">
         <h2>Quản lý Nhà Cung Cấp</h2>
+        
+        <!-- Hiển thị thông báo nếu thêm nhà cung cấp thành công -->
+        <?php
+        if (isset($_GET['added']) && $_GET['added'] == 'true') {
+            echo "<script>alert('Thêm nhà cung cấp thành công!');</script>";
+        }
+        ?>
+        
         <table>
             <tr>
                 <th>ID</th>
