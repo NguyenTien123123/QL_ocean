@@ -14,10 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare($query);
     $stmt->execute([$tenSP, $gia, $soLuong, $moTa]);
 
-    // Nếu thêm sản phẩm thành công, chuyển hướng về admin_dashboard.php và thêm tham số 'added=true'
+    // Nếu thêm sản phẩm thành công, chuyển hướng về quanly_sanpham.php và thêm tham số 'added=true'
     echo "<script>
             alert('Thêm sản phẩm thành công!');
-            window.location.href = 'admin_dashboard.php?added=true';
+            window.location.href = 'quanly_sanpham.php?added=true';
           </script>";
     exit();
 }

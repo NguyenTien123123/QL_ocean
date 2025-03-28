@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':ChucVu', $chucvu);
 
     if ($stmt->execute()) {
-        // Sau khi thêm thành công, chuyển hướng về trang admin_dashboard.php với thông báo 'added=true'
+        // Sau khi thêm thành công, chuyển hướng về trang quanly_nhanvien.php với thông báo 'added=true'
         echo '<script>
                 alert("Thêm nhân viên thành công!");
                 window.location.href="quanly_nhanvien.php?added=true";

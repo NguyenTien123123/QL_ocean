@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute([$ten, $email, $sdt, $chucVu]);
 
     // Nếu thêm nhân viên thành công, chuyển hướng về trang quản lý nhân viên và thêm tham số 'added=true'
-    header("Location: admin_dashboard.php?added=true#quanly_nhanvien");
+    header("Location: quanly_nhanvien.php?added=true#");
     exit();
 }
 ?>

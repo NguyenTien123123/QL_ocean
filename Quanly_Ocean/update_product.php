@@ -15,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare($query);
     $stmt->execute([$tenSP, $gia, $soLuong, $moTa, $spid]);
 
-    // Nếu cập nhật thành công, hiển thị thông báo và quay lại admin_dashboard.php với tham số 'updated=true'
+    // Nếu cập nhật thành công, hiển thị thông báo và quay lại quanly_sanpham.php với tham số 'updated=true'
     echo "<script>
             alert('Cập nhật sản phẩm thành công!');
-            window.location.href = 'admin_dashboard.php?updated=true';
+            window.location.href = 'quanly_sanpham.php?updated=true';
           </script>";
     exit();
 }
