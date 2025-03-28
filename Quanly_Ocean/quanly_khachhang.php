@@ -1,16 +1,9 @@
 <?php
-// Kết nối cơ sở dữ liệu
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "ql_ocean4"; // Đảm bảo tên cơ sở dữ liệu đúng
+include 'db_connect.php';
 
-try {
-    // Kết nối MySQL bằng PDO
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Lỗi kết nối CSDL: " . $e->getMessage());
+// Kiểm tra nếu có thông báo thành công từ URL
+if (isset($_GET['success']) && $_GET['success'] == 1) {
+    echo "<script type='text/javascript'>alert('Thêm khách hàng thành công!');</script>";
 }
 
 // Lấy danh sách khách hàng từ cơ sở dữ liệu
@@ -98,9 +91,8 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
             display: flex;
         }
 
-        /* Phần chia khung ở giữa */
         .left-panel {
-            width: 70%;  /* Điều chỉnh phần này chiếm 70% */
+            width: 70%;
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
@@ -108,7 +100,7 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
         }
 
         .right-panel {
-            width: 25%;  /* Điều chỉnh phần này chiếm 25% */
+            width: 25%;
             background: #222;
             padding: 20px;
             border-radius: 10px;
@@ -183,19 +175,18 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
 <div class="container">
     <div class="menu">
         <ul>
-            <li><a href="#" onclick="loadPage('quanly_nhaphang.php')">Quản lý nhập hàng</a></li>
-            <li><a href="#" onclick="loadPage('quanly_banhang.php')">Quản lý bán hàng</a></li>
-            <li><a href="#" onclick="loadPage('quanly_sanpham.php')">Quản lý sản phẩm</a></li>
-            <li><a href="#" onclick="loadPage('quanly_khachhang.php')">Quản lý khách hàng</a></li>
-            <li><a href="#" onclick="loadPage('quanly_nhanvien.php')">Quản lý nhân viên</a></li>
-            <li><a href="#" onclick="loadPage('quanly_nhacungcap.php')">Quản lý nhà cung cấp</a></li>
-            <li><a href="#" onclick="loadPage('thongke_doanhthu_nvnv.php')">Báo cáo doanh thu theo nhân viên</a></li>
-            <li><a href="#" onclick="loadPage('thongke_doanhthu_sp.php')">Báo cáo doanh thu theo sản phẩm</a></li>
+            <li><a href="#">Quản lý nhập hàng</a></li>
+            <li><a href="#">Quản lý bán hàng</a></li>
+            <li><a href="#">Quản lý sản phẩm</a></li>
+            <li><a href="#">Quản lý khách hàng</a></li>
+            <li><a href="#">Quản lý nhân viên</a></li>
+            <li><a href="#">Quản lý nhà cung cấp</a></li>
+            <li><a href="#">Báo cáo doanh thu theo nhân viên</a></li>
+            <li><a href="#">Báo cáo doanh thu theo sản phẩm</a></li>
         </ul>
     </div>
 
     <div id="content">
-        <!-- Phần danh sách khách hàng -->
         <div class="left-panel">
             <h2>Quản lý Khách Hàng</h2>
             <table>
@@ -232,7 +223,6 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
             </table>
         </div>
 
-        <!-- Phần thêm khách hàng -->
         <div class="right-panel">
             <h2>Thêm Khách Hàng Mới</h2>
             <form method="POST" action="add_customer.php">

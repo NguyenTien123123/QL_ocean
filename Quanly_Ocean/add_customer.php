@@ -25,12 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare($query);
     $stmt->execute([$ten, $email, $sdt, $diachi, $ngaysinh, $gioitinh, $ghichu]);
 
-    // Lưu thông báo thành công vào session
-    session_start();
-    $_SESSION['success_message'] = "Thêm khách hàng thành công!";
-
-    // Chuyển hướng về trang quản lý khách hàng
-    header("Location: quanly_khachhang.php");
+    // Chuyển hướng về trang quản lý khách hàng và hiển thị thông báo thành công
+    header("Location: quanly_khachhang.php?success=1");
     exit;
 }
 ?>

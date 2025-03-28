@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Sau khi thêm thành công, chuyển hướng về trang admin_dashboard.php với thông báo 'added=true'
         echo '<script>
                 alert("Thêm nhân viên thành công!");
-                window.location.href="admin_dashboard.php?added=true";
+                window.location.href="quanly_nhanvien.php?added=true";
               </script>';
     } else {
         echo '<script>alert("Lỗi khi thêm nhân viên!");</script>';
