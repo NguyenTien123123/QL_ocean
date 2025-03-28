@@ -111,7 +111,10 @@
             // Kiểm tra URL có tham số 'added=true' hay 'updated=true'
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('added') && urlParams.get('added') === 'true') {
-                loadPage('quanly_sanpham.php'); // Tự động load trang quản lý sản phẩm và thông báo thành công
+                // Quay lại trang trước sau khi thêm thành công
+                setTimeout(function() {
+                    history.back();
+                }, 1000); // Đợi 2 giây trước khi quay lại trang cũ
             } else if (urlParams.has('updated') && urlParams.get('updated') === 'true') {
                 loadPage('quanly_sanpham.php'); // Tự động load trang quản lý sản phẩm sau khi cập nhật
             }
@@ -140,9 +143,9 @@
             <?php
             // Kiểm tra tham số 'added' hoặc 'updated' trong URL để hiển thị thông báo
             if (isset($_GET['added']) && $_GET['added'] == 'true') {
-                echo '<div class="alert">Sản phẩm đã được thêm thành công!</div>';
+                echo '<div class="alert">Thêm thành công!</div>';
             } elseif (isset($_GET['updated']) && $_GET['updated'] == 'true') {
-                echo '<div class="alert">Sản phẩm đã được cập nhật thành công!</div>';
+                echo '<div class="alert">Cập nhật thành công!</div>';
             } else {
                 echo '<h3>Chọn chức năng quản lý để hiển thị nội dung...</h3>';
             }

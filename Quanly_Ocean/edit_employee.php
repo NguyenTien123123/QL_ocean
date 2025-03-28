@@ -17,27 +17,32 @@ if (isset($_GET['id'])) {
         exit();
     }
 
-    // Xử lý khi người dùng gửi form sửa nhân viên
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $ten = $_POST['Ten'];
-        $email = $_POST['Email'];
-        $sdt = $_POST['SDT'];
-        $chucvu = $_POST['ChucVu'];
+    // Kiểm tra nếu người dùng đã gửi form
+ // Xử lý khi người dùng gửi form sửa nhân viên
+ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ten = $_POST['Ten'];
+    $email = $_POST['Email'];
+    $sdt = $_POST['SDT'];
+    $chucvu = $_POST['ChucVu'];
 
-        $query = "UPDATE nhanvien SET Ten = :Ten, Email = :Email, SDT = :SDT, ChucVu = :ChucVu WHERE NVID = :NVID";
-        $stmt = $conn->prepare($query);
-        $stmt->bindParam(':Ten', $ten);
-        $stmt->bindParam(':Email', $email);
-        $stmt->bindParam(':SDT', $sdt);
-        $stmt->bindParam(':ChucVu', $chucvu);
-        $stmt->bindParam(':NVID', $id);
+    $query = "UPDATE nhanvien SET Ten = :Ten, Email = :Email, SDT = :SDT, ChucVu = :ChucVu WHERE NVID = :NVID";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':Ten', $ten);
+    $stmt->bindParam(':Email', $email);
+    $stmt->bindParam(':SDT', $sdt);
+    $stmt->bindParam(':ChucVu', $chucvu);
+    $stmt->bindParam(':NVID', $id);
 
-        if ($stmt->execute()) {
-            echo '<script>alert("Cập nhật nhân viên thành công!"); window.location.href="quanly_nhanvien.php";</script>';
-        } else {
-            echo '<script>alert("Lỗi khi cập nhật nhân viên!");</script>';
-        }
+    if ($stmt->execute()) {
+        echo '<script>
+            alert("Cập nhật nhân viên thành công!");
+            window.history.go(-2);
+        </script>';
+    } else {
+        echo '<script>alert("Lỗi khi cập nhật nhân viên!");</script>';
     }
+}
+
 }
 ?>
 
@@ -113,59 +118,61 @@ if (isset($_GET['id'])) {
             background-color: #333;
             border-radius: 10px;
             border: 2px solid #ffcc00;
+            height: calc(100vh - 40px);
+            color: #fff;
+            overflow-y: auto;
         }
 
-        .form-container {
-            max-width: 600px;
-            margin: auto;
+        form {
+            display: flex;
+            flex-direction: column;
         }
 
         label {
-            font-weight: bold;
-            color: #ffcc00;
             margin-top: 10px;
+            font-weight: bold;
+            color: #FFD700;
         }
 
         input {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
-            background-color: #222;
-            color: #fff;
-            border: 2px solid #ffcc00;
+            background: #333;
+            color: white;
+            border: 1px solid #FFD700;
             border-radius: 5px;
         }
 
         button {
-            background-color: #ffcc00;
-            color: #333;
-            padding: 10px;
             margin-top: 15px;
+            background: #FFD700;
+            color: black;
+            padding: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #e5a900;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="menu">
-        <ul>
-            <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
-            <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
-            <li><a href="quanly_donhang.php">Quản lý đơn hàng</a></li>
-        </ul>
-    </div>
+    <h2>Hệ thống quản lý</h2>
 
-    <div id="content">
-        <h2>Sửa thông tin nhân viên</h2>
-        <div class="form-container">
+    <div class="container">
+        <div class="menu">
+            <ul>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
+                <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
+                <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
+                <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
+                <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
+            </ul>
+        </div>
+
+        <div id="content">
+            <h2>Sửa Nhân Viên</h2>
             <form method="POST">
                 <label for="Ten">Tên nhân viên:</label>
                 <input type="text" id="Ten" name="Ten" value="<?= $employee['Ten'] ?>" required>
@@ -179,11 +186,10 @@ if (isset($_GET['id'])) {
                 <label for="ChucVu">Chức vụ:</label>
                 <input type="text" id="ChucVu" name="ChucVu" value="<?= $employee['ChucVu'] ?>" required>
 
-                <button type="submit">Cập nhật nhân viên</button>
+                <button type="submit">Cập nhật</button>
             </form>
         </div>
     </div>
-</div>
 
 </body>
 </html>
