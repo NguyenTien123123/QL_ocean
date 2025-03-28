@@ -6,6 +6,27 @@ $query = "SELECT * FROM nhanvien";
 $stmt = $conn->prepare($query);
 $stmt->execute();
 $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lấy dữ liệu và gán vào biến $employees
+
+// Xử lý khi người dùng gửi form thêm nhân viên mới
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ten = $_POST['Ten'];
+    $email = $_POST['Email'];
+    $sdt = $_POST['SDT'];
+    $chucvu = $_POST['ChucVu'];
+
+    $query = "INSERT INTO nhanvien (Ten, Email, SDT, ChucVu) VALUES (:Ten, :Email, :SDT, :ChucVu)";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':Ten', $ten);
+    $stmt->bindParam(':Email', $email);
+    $stmt->bindParam(':SDT', $sdt);
+    $stmt->bindParam(':ChucVu', $chucvu);
+
+    if ($stmt->execute()) {
+        echo '<script>alert("Thêm nhân viên thành công!"); window.location.href="quanly_nhanvien.php";</script>';
+    } else {
+        echo '<script>alert("Lỗi khi thêm nhân viên!");</script>';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -134,7 +155,7 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lấy dữ liệu và gán v
     <!-- Phần thêm nhân viên -->
     <div class="right-panel">
         <h2>Thêm Nhân Viên Mới</h2>
-        <form method="POST" action="add_employee.php">
+        <form method="POST" action="quanly_nhanvien.php">
             <label for="Ten">Tên nhân viên:</label>
             <input type="text" id="Ten" name="Ten" required>
 

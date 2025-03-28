@@ -16,6 +16,28 @@ if (isset($_GET['id'])) {
         echo "Nhân viên không tồn tại!";
         exit();
     }
+
+    // Xử lý khi người dùng gửi form sửa nhân viên
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $ten = $_POST['Ten'];
+        $email = $_POST['Email'];
+        $sdt = $_POST['SDT'];
+        $chucvu = $_POST['ChucVu'];
+
+        $query = "UPDATE nhanvien SET Ten = :Ten, Email = :Email, SDT = :SDT, ChucVu = :ChucVu WHERE NVID = :NVID";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':Ten', $ten);
+        $stmt->bindParam(':Email', $email);
+        $stmt->bindParam(':SDT', $sdt);
+        $stmt->bindParam(':ChucVu', $chucvu);
+        $stmt->bindParam(':NVID', $id);
+
+        if ($stmt->execute()) {
+            echo '<script>alert("Cập nhật nhân viên thành công!"); window.location.href="quanly_nhanvien.php";</script>';
+        } else {
+            echo '<script>alert("Lỗi khi cập nhật nhân viên!");</script>';
+        }
+    }
 }
 ?>
 
@@ -91,65 +113,60 @@ if (isset($_GET['id'])) {
             background-color: #333;
             border-radius: 10px;
             border: 2px solid #ffcc00;
-            height: calc(100vh - 40px);
-            color: #fff;
-            overflow-y: auto;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
+        .form-container {
+            max-width: 600px;
+            margin: auto;
         }
 
         label {
-            margin-top: 10px;
             font-weight: bold;
-            color: #FFD700;
+            color: #ffcc00;
+            margin-top: 10px;
         }
 
-        input, textarea {
+        input {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
-            background: #333;
-            color: white;
-            border: 1px solid #FFD700;
+            background-color: #222;
+            color: #fff;
+            border: 2px solid #ffcc00;
             border-radius: 5px;
         }
 
         button {
-            margin-top: 15px;
-            background: #FFD700;
-            color: black;
+            background-color: #ffcc00;
+            color: #333;
             padding: 10px;
+            margin-top: 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #e5a900;
         }
     </style>
 </head>
 <body>
 
-    <h2>Hệ thống quản lý</h2>
+<div class="container">
+    <div class="menu">
+        <ul>
+            <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
+            <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
+            <li><a href="quanly_donhang.php">Quản lý đơn hàng</a></li>
+        </ul>
+    </div>
 
-    <div class="container">
-        <div class="menu">
-            <ul>
-                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
-                <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
-                <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
-                <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
-                <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
-                <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
-            </ul>
-        </div>
-
-        <div id="content">
-            <h2>Sửa Nhân Viên</h2>
-            <form method="POST" action="edit_employee.php?id=<?= $employee['NVID'] ?>">
-                <!-- Lưu ID nhân viên trong trường hidden -->
-                <input type="hidden" name="NVID" value="<?= $employee['NVID'] ?>">
-
+    <div id="content">
+        <h2>Sửa thông tin nhân viên</h2>
+        <div class="form-container">
+            <form method="POST">
                 <label for="Ten">Tên nhân viên:</label>
                 <input type="text" id="Ten" name="Ten" value="<?= $employee['Ten'] ?>" required>
 
@@ -166,6 +183,7 @@ if (isset($_GET['id'])) {
             </form>
         </div>
     </div>
+</div>
 
 </body>
 </html>
