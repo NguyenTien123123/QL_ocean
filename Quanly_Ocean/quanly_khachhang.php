@@ -1,23 +1,23 @@
 <?php
-session_start();
-include 'db_connect.php';
+// Kết nối cơ sở dữ liệu
+$servername = "localhost"; 
+$username = "root"; 
+$password = ""; 
+$dbname = "ql_ocean4"; // Đảm bảo tên cơ sở dữ liệu đúng
 
-// Hiển thị thông báo thành công nếu có
-if (isset($_SESSION['success_message'])) {
-    echo "<div style='color: green; text-align: center; font-weight: bold; margin-top: 20px;'>"
-        . $_SESSION['success_message'] .
-        "</div>";
-    unset($_SESSION['success_message']); // Xóa thông báo sau khi hiển thị
+try {
+    // Kết nối MySQL bằng PDO
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Lỗi kết nối CSDL: " . $e->getMessage());
 }
 
-// Lấy danh sách khách hàng
-$query = "
-    SELECT KHID, Ten, Email, SDT, DiaChi, GioiTinh, NgaySinh, GhiChu
-    FROM khachhang
-";
+// Lấy danh sách khách hàng từ cơ sở dữ liệu
+$query = "SELECT * FROM khachhang";  // Thay đổi tên bảng nếu cần
 $stmt = $conn->prepare($query);
 $stmt->execute();
-$customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến $customers
 ?>
 
 <!DOCTYPE html>
@@ -25,26 +25,96 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý khách hàng</title>
+    <title>Quản lý Khách hàng</title>
     <style>
-        /* Layout */
-        .container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            margin: 0;
+            padding: 0;
         }
 
+        h2 {
+            color: #ffcc00;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .menu {
+            width: 250px;
+            background-color: #222;
+            padding-top: 20px;
+            text-align: left;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            border-right: 2px solid #ffcc00;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu li {
+            margin: 10px 0;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #ffcc00;
+            font-size: 18px;
+            padding: 10px;
+            display: block;
+            text-align: center;
+            border: 2px solid #ffcc00;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #ffcc00;
+            color: #1e1e1e;
+        }
+
+        #content {
+            margin-left: 270px;
+            padding: 20px;
+            width: calc(100% - 270px);
+            background-color: #333;
+            border-radius: 10px;
+            border: 2px solid #ffcc00;
+            height: calc(100vh - 40px);
+            color: #fff;
+            overflow-y: auto;
+            display: flex;
+        }
+
+        /* Phần chia khung ở giữa */
         .left-panel {
-            width: 75%;
+            width: 70%;  /* Điều chỉnh phần này chiếm 70% */
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
         }
 
         .right-panel {
-            width: 20%;
+            width: 25%;  /* Điều chỉnh phần này chiếm 25% */
             background: #222;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
             color: white;
+            margin-left: 20px;
         }
 
         table {
@@ -65,7 +135,6 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: black;
         }
 
-        /* Form */
         form {
             display: flex;
             flex-direction: column;
@@ -77,7 +146,7 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: #FFD700;
         }
 
-        input, select, textarea {
+        input, textarea {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -105,80 +174,96 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         a:hover {
             text-decoration: underline;
         }
-
     </style>
 </head>
 <body>
 
+<h2>Hệ thống quản lý</h2>
+
 <div class="container">
-    <!-- Phần danh sách khách hàng -->
-    <div class="left-panel">
-        <h2>Quản lý Khách Hàng</h2>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Tên khách hàng</th>
-                <th>Email</th>
-                <th>SĐT</th>
-                <th>Địa chỉ</th>
-                <th>Ngày sinh</th>
-                <th>Giới tính</th>
-                <th>Ghi chú</th>
-                <th>Hành động</th>
-            </tr>
-            <?php if ($customers): ?>
-                <?php foreach ($customers as $customer): ?>
-                    <tr>
-                        <td><?= $customer['KHID'] ?></td>
-                        <td><?= $customer['Ten'] ?></td>
-                        <td><?= $customer['Email'] ?></td>
-                        <td><?= $customer['SDT'] ?></td>
-                        <td><?= $customer['DiaChi'] ?></td>
-                        <td><?= $customer['NgaySinh'] ?></td>
-                        <td><?= $customer['GioiTinh'] ?></td>
-                        <td><?= $customer['GhiChu'] ?></td>
-                        <td><a href="edit_customer.php?id=<?= $customer['KHID'] ?>">Sửa</a></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="9">Không có khách hàng nào.</td>
-                </tr>
-            <?php endif; ?>
-        </table>
+    <div class="menu">
+        <ul>
+            <li><a href="#" onclick="loadPage('quanly_nhaphang.php')">Quản lý nhập hàng</a></li>
+            <li><a href="#" onclick="loadPage('quanly_banhang.php')">Quản lý bán hàng</a></li>
+            <li><a href="#" onclick="loadPage('quanly_sanpham.php')">Quản lý sản phẩm</a></li>
+            <li><a href="#" onclick="loadPage('quanly_khachhang.php')">Quản lý khách hàng</a></li>
+            <li><a href="#" onclick="loadPage('quanly_nhanvien.php')">Quản lý nhân viên</a></li>
+            <li><a href="#" onclick="loadPage('quanly_nhacungcap.php')">Quản lý nhà cung cấp</a></li>
+            <li><a href="#" onclick="loadPage('thongke_doanhthu_nvnv.php')">Báo cáo doanh thu theo nhân viên</a></li>
+            <li><a href="#" onclick="loadPage('thongke_doanhthu_sp.php')">Báo cáo doanh thu theo sản phẩm</a></li>
+        </ul>
     </div>
 
-    <!-- Phần thêm khách hàng -->
-    <div class="right-panel">
-        <h2>Thêm Khách Hàng Mới</h2>
-        <form method="POST" action="add_customer.php">
-            <label for="Ten">Tên khách hàng:</label>
-            <input type="text" id="Ten" name="Ten" required>
+    <div id="content">
+        <!-- Phần danh sách khách hàng -->
+        <div class="left-panel">
+            <h2>Quản lý Khách Hàng</h2>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên khách hàng</th>
+                    <th>Email</th>
+                    <th>SĐT</th>
+                    <th>Địa chỉ</th>
+                    <th>Ngày sinh</th>
+                    <th>Giới tính</th>
+                    <th>Ghi chú</th>
+                    <th>Hành động</th>
+                </tr>
+                <?php if ($customers): ?>
+                    <?php foreach ($customers as $row) { ?>
+                    <tr>
+                        <td><?= $row['KHID'] ?></td>
+                        <td><?= $row['Ten'] ?></td>
+                        <td><?= $row['Email'] ?></td>
+                        <td><?= $row['SDT'] ?></td>
+                        <td><?= $row['DiaChi'] ?></td>
+                        <td><?= $row['NgaySinh'] ?></td>
+                        <td><?= $row['GioiTinh'] ?></td>
+                        <td><?= $row['GhiChu'] ?></td>
+                        <td><a href="edit_customer.php?id=<?= $row['KHID'] ?>">Sửa</a></td>
+                    </tr>
+                    <?php } ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="9">Không có khách hàng nào!</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+        </div>
 
-            <label for="Email">Email:</label>
-            <input type="email" id="Email" name="Email" required>
+        <!-- Phần thêm khách hàng -->
+        <div class="right-panel">
+            <h2>Thêm Khách Hàng Mới</h2>
+            <form method="POST" action="add_customer.php">
+                <label for="Ten">Tên khách hàng:</label>
+                <input type="text" id="Ten" name="Ten" required>
 
-            <label for="SDT">Số điện thoại:</label>
-            <input type="text" id="SDT" name="SDT" required>
+                <label for="Email">Email:</label>
+                <input type="email" id="Email" name="Email" required>
 
-            <label for="DiaChi">Địa chỉ:</label>
-            <textarea id="DiaChi" name="DiaChi" required></textarea>
+                <label for="SDT">Số điện thoại:</label>
+                <input type="text" id="SDT" name="SDT" required>
 
-            <label for="NgaySinh">Ngày sinh:</label>
-            <input type="date" id="NgaySinh" name="NgaySinh">
+                <label for="DiaChi">Địa chỉ:</label>
+                <textarea id="DiaChi" name="DiaChi" required></textarea>
 
-            <label for="GioiTinh">Giới tính:</label>
-            <select id="GioiTinh" name="GioiTinh">
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
-            </select>
+                <label for="NgaySinh">Ngày sinh:</label>
+                <input type="date" id="NgaySinh" name="NgaySinh">
 
-            <label for="GhiChu">Ghi chú:</label>
-            <textarea id="GhiChu" name="GhiChu"></textarea>
+                <label for="GioiTinh">Giới tính:</label>
+                <select id="GioiTinh" name="GioiTinh">
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
 
-            <button type="submit">Thêm khách hàng</button>
-        </form>
+                <label for="GhiChu">Ghi chú:</label>
+                <textarea id="GhiChu" name="GhiChu"></textarea>
+
+                <button type="submit">Thêm khách hàng</button>
+            </form>
+        </div>
     </div>
 </div>
 

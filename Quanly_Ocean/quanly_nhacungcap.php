@@ -15,25 +15,93 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Nhà Cung Cấp</title>
     <style>
-        /* Chia layout làm 2 phần */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            color: #ffcc00;
+            text-align: center;
+            margin-top: 20px;
+        }
+
         .container {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
+            min-height: 100vh;
         }
-        
+
+        .menu {
+            width: 250px;
+            background-color: #222;
+            padding-top: 20px;
+            text-align: left;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            border-right: 2px solid #ffcc00;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu li {
+            margin: 10px 0;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #ffcc00;
+            font-size: 18px;
+            padding: 10px;
+            display: block;
+            text-align: center;
+            border: 2px solid #ffcc00;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #ffcc00;
+            color: #1e1e1e;
+        }
+
+        #content {
+            margin-left: 270px;
+            padding: 20px;
+            width: calc(100% - 270px);
+            background-color: #333;
+            border-radius: 10px;
+            border: 2px solid #ffcc00;
+            height: calc(100vh - 40px);
+            color: #fff;
+            overflow-y: auto;
+            display: flex;
+        }
+
         .left-panel {
-            width: 75%;
+            width: 70%;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
         }
-        
+
         .right-panel {
-            width: 20%;
+            width: 25%;
             background: #222;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
             color: white;
+            margin-left: 20px;
         }
 
         table {
@@ -54,7 +122,6 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             color: black;
         }
 
-        /* Form */
         form {
             display: flex;
             flex-direction: column;
@@ -98,69 +165,84 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
+<h2>Hệ thống quản lý</h2>
+
 <div class="container">
-    <!-- Phần danh sách nhà cung cấp -->
-    <div class="left-panel">
-        <h2>Quản lý Nhà Cung Cấp</h2>
-        
-        <!-- Hiển thị thông báo nếu thêm nhà cung cấp thành công -->
-        <?php
-        if (isset($_GET['added']) && $_GET['added'] == 'true') {
-            echo "<script>alert('Thêm nhà cung cấp thành công!');</script>";
-        }
-        ?>
-        
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Tên nhà cung cấp</th>
-                <th>Địa chỉ</th>
-                <th>SĐT</th>
-                <th>Email</th>
-                <th>Website</th>
-                <th>Hành động</th>
-            </tr>
-            <?php if ($suppliers): ?>
-                <?php foreach ($suppliers as $row) { ?>
-                <tr>
-                    <td><?= $row['NCCID'] ?></td>
-                    <td><?= $row['TenNCC'] ?></td>
-                    <td><?= $row['DiaChi'] ?></td>
-                    <td><?= $row['SDT'] ?></td>
-                    <td><?= $row['Email'] ?></td>
-                    <td><?= $row['Website'] ?></td>
-                    <td><a href="edit_supplier.php?id=<?= $row['NCCID'] ?>">Sửa</a></td>
-                </tr>
-                <?php } ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="7">Không có nhà cung cấp nào!</td>
-                </tr>
-            <?php endif; ?>
-        </table>
+    <div class="menu">
+        <ul>
+            <li><a href="#" onclick="loadPage('quanly_nhaphang.php')">Quản lý nhập hàng</a></li>
+            <li><a href="#" onclick="loadPage('quanly_banhang.php')">Quản lý bán hàng</a></li>
+            <li><a href="#" onclick="loadPage('quanly_sanpham.php')">Quản lý sản phẩm</a></li>
+            <li><a href="#" onclick="loadPage('quanly_khachhang.php')">Quản lý khách hàng</a></li>
+            <li><a href="#" onclick="loadPage('quanly_nhanvien.php')">Quản lý nhân viên</a></li>
+            <li><a href="#" onclick="loadPage('quanly_nhacungcap.php')">Quản lý nhà cung cấp</a></li>
+            <li><a href="#" onclick="loadPage('thongke_doanhthu_nvnv.php')">Báo cáo doanh thu theo nhân viên</a></li>
+            <li><a href="#" onclick="loadPage('thongke_doanhthu_sp.php')">Báo cáo doanh thu theo sản phẩm</a></li>
+        </ul>
     </div>
 
-    <!-- Phần thêm nhà cung cấp -->
-    <div class="right-panel">
-        <h2>Thêm Nhà Cung Cấp Mới</h2>
-        <form method="POST" action="add_supplier.php">
-            <label for="TenNCC">Tên nhà cung cấp:</label>
-            <input type="text" id="TenNCC" name="TenNCC" required>
+    <div id="content">
+        <div class="left-panel">
+            <h2>Quản lý Nhà Cung Cấp</h2>
+            
+            <!-- Hiển thị thông báo nếu thêm nhà cung cấp thành công -->
+            <?php
+            if (isset($_GET['added']) && $_GET['added'] == 'true') {
+                echo "<script>alert('Thêm nhà cung cấp thành công!');</script>";
+            }
+            ?>
+            
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên nhà cung cấp</th>
+                    <th>Địa chỉ</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Website</th>
+                    <th>Hành động</th>
+                </tr>
+                <?php if ($suppliers): ?>
+                    <?php foreach ($suppliers as $row) { ?>
+                    <tr>
+                        <td><?= $row['NCCID'] ?></td>
+                        <td><?= $row['TenNCC'] ?></td>
+                        <td><?= $row['DiaChi'] ?></td>
+                        <td><?= $row['SDT'] ?></td>
+                        <td><?= $row['Email'] ?></td>
+                        <td><?= $row['Website'] ?></td>
+                        <td><a href="edit_supplier.php?id=<?= $row['NCCID'] ?>">Sửa</a></td>
+                    </tr>
+                    <?php } ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7">Không có nhà cung cấp nào!</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+        </div>
 
-            <label for="DiaChi">Địa chỉ:</label>
-            <input type="text" id="DiaChi" name="DiaChi" required>
+        <div class="right-panel">
+            <h2>Thêm Nhà Cung Cấp Mới</h2>
+            <form method="POST" action="add_supplier.php">
+                <label for="TenNCC">Tên nhà cung cấp:</label>
+                <input type="text" id="TenNCC" name="TenNCC" required>
 
-            <label for="SDT">Số điện thoại:</label>
-            <input type="text" id="SDT" name="SDT" required>
+                <label for="DiaChi">Địa chỉ:</label>
+                <input type="text" id="DiaChi" name="DiaChi" required>
 
-            <label for="Email">Email:</label>
-            <input type="email" id="Email" name="Email" required>
+                <label for="SDT">Số điện thoại:</label>
+                <input type="text" id="SDT" name="SDT" required>
 
-            <label for="Website">Website:</label>
-            <input type="text" id="Website" name="Website" required>
+                <label for="Email">Email:</label>
+                <input type="email" id="Email" name="Email" required>
 
-            <button type="submit">Thêm nhà cung cấp</button>
-        </form>
+                <label for="Website">Website:</label>
+                <input type="text" id="Website" name="Website" required>
+
+                <button type="submit">Thêm nhà cung cấp</button>
+            </form>
+        </div>
     </div>
 </div>
 
