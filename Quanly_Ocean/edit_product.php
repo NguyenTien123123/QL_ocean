@@ -16,6 +16,34 @@ if (!$product) {
     echo "Sản phẩm không tồn tại!";
     exit;
 }
+
+// Kiểm tra nếu người dùng đã gửi form
+// Xử lý khi người dùng gửi form sửa sản phẩm
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $TenSP = $_POST['TenSP'];
+    $Gia = $_POST['Gia'];
+    $SoLuong = $_POST['SoLuong'];
+    $MoTa = $_POST['MoTa'];
+
+    $query = "UPDATE sanpham SET TenSP = :TenSP, Gia = :Gia, SoLuong = :SoLuong, MoTa = :MoTa WHERE SPID = :SPID";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':TenSP', $TenSP);
+    $stmt->bindParam(':Gia', $Gia);
+    $stmt->bindParam(':SoLuong', $SoLuong);
+    $stmt->bindParam(':MoTa', $MoTa);
+    $stmt->bindParam(':SPID', $SPID);
+
+    if ($stmt->execute()) {
+        // Redirect to 'quanly_sanpham.php' after a successful update
+        echo '<script>
+            alert("Cập nhật sản phẩm thành công!");
+            window.location.href = "quanly_sanpham.php";
+        </script>';
+        exit();
+    } else {
+        echo '<script>alert("Lỗi khi cập nhật sản phẩm!");</script>';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -147,10 +175,7 @@ if (!$product) {
 
         <div id="content">
             <h2>Sửa Sản Phẩm</h2>
-            <form method="POST" action="update_product.php">
-                <!-- Lưu ID sản phẩm trong trường hidden -->
-                <input type="hidden" name="SPID" value="<?= $product['SPID'] ?>">
-
+            <form method="POST">
                 <label for="TenSP">Tên sản phẩm:</label>
                 <input type="text" id="TenSP" name="TenSP" value="<?= $product['TenSP'] ?>" required>
 

@@ -1,5 +1,5 @@
 <?php
-include 'db_connect.php';
+include 'db_connect.php';  // Kết nối cơ sở dữ liệu
 
 // Kiểm tra nếu có tham số 'id' trong URL
 if (isset($_GET['id'])) {
@@ -16,46 +16,39 @@ if (isset($_GET['id'])) {
         echo "Khách hàng không tồn tại!";
         exit();
     }
-}
 
-// Cập nhật thông tin khách hàng khi form được submit
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $ten = $_POST['Ten'];
-    $email = $_POST['Email'];
-    $sdt = $_POST['SDT'];
-    $diachi = $_POST['DiaChi'];
-    $ngaysinh = $_POST['NgaySinh'];
-    $gioitinh = $_POST['GioiTinh'];
-    $ghichu = $_POST['GhiChu'];
+    // Kiểm tra nếu người dùng đã gửi form
+    // Xử lý khi người dùng gửi form sửa khách hàng
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $ten = $_POST['Ten'];
+        $email = $_POST['Email'];
+        $sdt = $_POST['SDT'];
+        $diachi = $_POST['DiaChi'];
+        $ngaysinh = $_POST['NgaySinh'];
+        $gioitinh = $_POST['GioiTinh'];
+        $ghichu = $_POST['GhiChu'];
 
-    // Kiểm tra định dạng ngày sinh (YYYY-MM-DD)
-    if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $ngaysinh)) {
-        echo "Ngày sinh không hợp lệ!";
-        exit();
+        $query = "UPDATE khachhang SET Ten = :Ten, Email = :Email, SDT = :SDT, DiaChi = :DiaChi, NgaySinh = :NgaySinh, GioiTinh = :GioiTinh, GhiChu = :GhiChu WHERE KHID = :KHID";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':Ten', $ten);
+        $stmt->bindParam(':Email', $email);
+        $stmt->bindParam(':SDT', $sdt);
+        $stmt->bindParam(':DiaChi', $diachi);
+        $stmt->bindParam(':NgaySinh', $ngaysinh);
+        $stmt->bindParam(':GioiTinh', $gioitinh);
+        $stmt->bindParam(':GhiChu', $ghichu);
+        $stmt->bindParam(':KHID', $id);
+
+        if ($stmt->execute()) {
+            echo '<script>
+                alert("Cập nhật khách hàng thành công!");
+                window.location.href = "quanly_khachhang.php";
+            </script>';
+            exit();
+        } else {
+            echo '<script>alert("Lỗi khi cập nhật khách hàng!");</script>';
+        }
     }
-
-    // Kiểm tra giới tính hợp lệ
-    if (!in_array($gioitinh, ['Nam', 'Nữ', 'Khác'])) {
-        echo "Giới tính không hợp lệ!";
-        exit();
-    }
-
-    // Cập nhật vào bảng khách hàng
-    $query = "
-        UPDATE khachhang 
-        SET Ten = ?, Email = ?, SDT = ?, DiaChi = ?, NgaySinh = ?, GioiTinh = ?, GhiChu = ?
-        WHERE KHID = ?
-    ";
-    $stmt = $conn->prepare($query);
-    $stmt->execute([$ten, $email, $sdt, $diachi, $ngaysinh, $gioitinh, $ghichu, $id]);
-
-    // Lưu thông báo thành công vào session
-    session_start();
-    $_SESSION['success_message'] = "Cập nhật khách hàng thành công!";
-
-    // Chuyển hướng về trang quản lý khách hàng
-    header("Location: quanly_khachhang.php");
-    exit;
 }
 ?>
 
@@ -124,56 +117,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #1e1e1e;
         }
 
-        .form-container {
+        #content {
             margin-left: 270px;
-            padding: 40px;
-            width: 80%;
-        }
-
-        .form-container form {
-            background-color: #333;
             padding: 20px;
+            width: calc(100% - 270px);
+            background-color: #333;
             border-radius: 10px;
+            border: 2px solid #ffcc00;
+            height: calc(100vh - 40px);
+            color: #fff;
+            overflow-y: auto;
         }
 
-        .form-container label {
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
             font-weight: bold;
-            color: #ffcc00;
+            color: #FFD700;
         }
 
-        .form-container input, .form-container textarea, .form-container select {
+        input, textarea, select {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #444;
+            padding: 8px;
+            margin-top: 5px;
+            background: #333;
             color: white;
-            border: 1px solid #ffcc00;
+            border: 1px solid #FFD700;
             border-radius: 5px;
         }
 
-        .form-container button {
-            background-color: #ffcc00;
-            color: #1e1e1e;
+        button {
+            margin-top: 15px;
+            background: #FFD700;
+            color: black;
+            padding: 10px;
             border: none;
-            padding: 15px;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-            font-size: 18px;
         }
 
-        .form-container button:hover {
-            background-color: #ffb300;
+        button:hover {
+            background: #ffb300;
         }
     </style>
 </head>
 <body>
 
+    <h2>Hệ thống quản lý</h2>
+
     <div class="container">
-        <!-- Menu sidebar -->
         <div class="menu">
             <ul>
-            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
                 <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
                 <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
                 <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
@@ -184,10 +183,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </ul>
         </div>
 
-        <!-- Form sửa khách hàng -->
-        <div class="form-container">
+        <div id="content">
             <h2>Sửa Thông Tin Khách Hàng</h2>
-            <form method="POST" action="">
+            <form method="POST">
                 <label for="Ten">Tên khách hàng:</label>
                 <input type="text" id="Ten" name="Ten" value="<?= $customer['Ten'] ?>" required>
 

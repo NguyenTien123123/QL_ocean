@@ -18,31 +18,32 @@ if (isset($_GET['id'])) {
     }
 
     // Kiểm tra nếu người dùng đã gửi form
- // Xử lý khi người dùng gửi form sửa nhân viên
- if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $ten = $_POST['Ten'];
-    $email = $_POST['Email'];
-    $sdt = $_POST['SDT'];
-    $chucvu = $_POST['ChucVu'];
+    // Xử lý khi người dùng gửi form sửa nhân viên
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $ten = $_POST['Ten'];
+        $email = $_POST['Email'];
+        $sdt = $_POST['SDT'];
+        $chucvu = $_POST['ChucVu'];
 
-    $query = "UPDATE nhanvien SET Ten = :Ten, Email = :Email, SDT = :SDT, ChucVu = :ChucVu WHERE NVID = :NVID";
-    $stmt = $conn->prepare($query);
-    $stmt->bindParam(':Ten', $ten);
-    $stmt->bindParam(':Email', $email);
-    $stmt->bindParam(':SDT', $sdt);
-    $stmt->bindParam(':ChucVu', $chucvu);
-    $stmt->bindParam(':NVID', $id);
+        $query = "UPDATE nhanvien SET Ten = :Ten, Email = :Email, SDT = :SDT, ChucVu = :ChucVu WHERE NVID = :NVID";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':Ten', $ten);
+        $stmt->bindParam(':Email', $email);
+        $stmt->bindParam(':SDT', $sdt);
+        $stmt->bindParam(':ChucVu', $chucvu);
+        $stmt->bindParam(':NVID', $id);
 
-    if ($stmt->execute()) {
-        echo '<script>
-            alert("Cập nhật nhân viên thành công!");
-            window.history.go(-2);
-        </script>';
-    } else {
-        echo '<script>alert("Lỗi khi cập nhật nhân viên!");</script>';
+        if ($stmt->execute()) {
+            // Redirect to 'quanly_nhanvien.php' after a successful update
+            echo '<script>
+                alert("Cập nhật nhân viên thành công!");
+                window.location.href = "quanly_nhanvien.php";
+            </script>';
+            exit();
+        } else {
+            echo '<script>alert("Lỗi khi cập nhật nhân viên!");</script>';
+        }
     }
-}
-
 }
 ?>
 
@@ -162,7 +163,7 @@ if (isset($_GET['id'])) {
     <div class="container">
         <div class="menu">
             <ul>
-            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
                 <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
                 <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
                 <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>

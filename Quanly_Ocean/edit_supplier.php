@@ -134,7 +134,7 @@ if (isset($_GET['id'])) {
             color: #FFD700;
         }
 
-        input, textarea {
+        input {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -162,7 +162,7 @@ if (isset($_GET['id'])) {
     <div class="container">
         <div class="menu">
             <ul>
-            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
                 <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
                 <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
                 <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
@@ -175,10 +175,7 @@ if (isset($_GET['id'])) {
 
         <div id="content">
             <h2>Sửa Nhà Cung Cấp</h2>
-            <form method="POST" action="">
-                <!-- Lưu ID nhà cung cấp trong trường hidden -->
-                <input type="hidden" name="NCCID" value="<?= $supplier['NCCID'] ?>">
-
+            <form method="POST">
                 <label for="TenNCC">Tên nhà cung cấp:</label>
                 <input type="text" id="TenNCC" name="TenNCC" value="<?= $supplier['TenNCC'] ?>" required>
 
