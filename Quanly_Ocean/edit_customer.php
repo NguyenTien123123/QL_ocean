@@ -1,5 +1,5 @@
 <?php
-include 'db_connect.php';  // Kết nối cơ sở dữ liệu
+include 'db_connect.php';
 
 // Kiểm tra nếu có tham số 'id' trong URL
 if (isset($_GET['id'])) {
@@ -43,22 +43,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Cập nhật vào bảng khách hàng
     $query = "
         UPDATE khachhang 
-        SET Ten = ?, Email = ?, SDT = ?, DiaChi = ?
+        SET Ten = ?, Email = ?, SDT = ?, DiaChi = ?, NgaySinh = ?, GioiTinh = ?, GhiChu = ?
         WHERE KHID = ?
     ";
     $stmt = $conn->prepare($query);
-    $stmt->execute([$ten, $email, $sdt, $diachi, $id]);
+    $stmt->execute([$ten, $email, $sdt, $diachi, $ngaysinh, $gioitinh, $ghichu, $id]);
 
-    // Cập nhật vào bảng chi tiết khách hàng
-    $query = "
-        UPDATE chitietkhachhang 
-        SET NgaySinh = ?, GioiTinh = ?, GhiChu = ?
-        WHERE KHID = ?
-    ";
-    $stmt = $conn->prepare($query);
-    $stmt->execute([$ngaysinh, $gioitinh, $ghichu, $id]);
+    // Lưu thông báo thành công vào session
+    session_start();
+    $_SESSION['success_message'] = "Cập nhật khách hàng thành công!";
 
-    // Chuyển hướng về trang quản lý khách hàng sau khi cập nhật
+    // Chuyển hướng về trang quản lý khách hàng
     header("Location: quanly_khachhang.php");
     exit;
 }
@@ -129,72 +124,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #1e1e1e;
         }
 
-        #content {
+        .form-container {
             margin-left: 270px;
-            padding: 20px;
-            width: calc(100% - 270px);
+            padding: 40px;
+            width: 80%;
+        }
+
+        .form-container form {
             background-color: #333;
+            padding: 20px;
             border-radius: 10px;
-            border: 2px solid #ffcc00;
-            height: calc(100vh - 40px);
-            color: #fff;
-            overflow-y: auto;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-top: 10px;
+        .form-container label {
             font-weight: bold;
-            color: #FFD700;
+            color: #ffcc00;
         }
 
-        input, textarea, select {
+        .form-container input, .form-container textarea, .form-container select {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #444;
             color: white;
-            border: 1px solid #FFD700;
+            border: 1px solid #ffcc00;
             border-radius: 5px;
         }
 
-        button {
-            margin-top: 15px;
-            background: #FFD700;
-            color: black;
-            padding: 10px;
+        .form-container button {
+            background-color: #ffcc00;
+            color: #1e1e1e;
             border: none;
+            padding: 15px;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .form-container button:hover {
+            background-color: #ffb300;
         }
     </style>
 </head>
 <body>
 
-    <h2>Hệ thống quản lý</h2>
-
     <div class="container">
+        <!-- Menu sidebar -->
         <div class="menu">
             <ul>
-                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
-                <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
-                <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
                 <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
-                <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
-                <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
+                <li><a href="edit_customer.php?id=<?= $customer['KHID'] ?>">Sửa khách hàng</a></li>
             </ul>
         </div>
 
-        <div id="content">
-            <h2>Sửa Khách Hàng</h2>
-            <form method="POST" action="edit_customer.php?id=<?= $customer['KHID'] ?>">
-                <!-- Lưu ID khách hàng trong trường hidden -->
-                <input type="hidden" name="KHID" value="<?= $customer['KHID'] ?>">
-
+        <!-- Form sửa khách hàng -->
+        <div class="form-container">
+            <h2>Sửa Thông Tin Khách Hàng</h2>
+            <form method="POST" action="">
                 <label for="Ten">Tên khách hàng:</label>
                 <input type="text" id="Ten" name="Ten" value="<?= $customer['Ten'] ?>" required>
 
@@ -212,15 +199,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <label for="GioiTinh">Giới tính:</label>
                 <select id="GioiTinh" name="GioiTinh">
-                    <option value="Nam" <?= $customer['GioiTinh'] == 'Nam' ? 'selected' : '' ?>>Nam</option>
-                    <option value="Nữ" <?= $customer['GioiTinh'] == 'Nữ' ? 'selected' : '' ?>>Nữ</option>
-                    <option value="Khác" <?= $customer['GioiTinh'] == 'Khác' ? 'selected' : '' ?>>Khác</option>
+                    <option value="Nam" <?= ($customer['GioiTinh'] == 'Nam') ? 'selected' : '' ?>>Nam</option>
+                    <option value="Nữ" <?= ($customer['GioiTinh'] == 'Nữ') ? 'selected' : '' ?>>Nữ</option>
+                    <option value="Khác" <?= ($customer['GioiTinh'] == 'Khác') ? 'selected' : '' ?>>Khác</option>
                 </select>
 
                 <label for="GhiChu">Ghi chú:</label>
                 <textarea id="GhiChu" name="GhiChu"><?= $customer['GhiChu'] ?></textarea>
 
-                <button type="submit">Cập nhật khách hàng</button>
+                <button type="submit">Cập nhật thông tin</button>
             </form>
         </div>
     </div>

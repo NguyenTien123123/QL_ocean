@@ -1,11 +1,19 @@
 <?php
+session_start();
 include 'db_connect.php';
+
+// Hiển thị thông báo thành công nếu có
+if (isset($_SESSION['success_message'])) {
+    echo "<div style='color: green; text-align: center; font-weight: bold; margin-top: 20px;'>"
+        . $_SESSION['success_message'] .
+        "</div>";
+    unset($_SESSION['success_message']); // Xóa thông báo sau khi hiển thị
+}
 
 // Lấy danh sách khách hàng
 $query = "
-    SELECT kh.KHID, kh.Ten, kh.Email, kh.SDT, kh.DiaChi, ctkh.NgaySinh, ctkh.GioiTinh, ctkh.GhiChu
-    FROM khachhang kh
-    LEFT JOIN chitietkhachhang ctkh ON kh.KHID = ctkh.KHID
+    SELECT KHID, Ten, Email, SDT, DiaChi, GioiTinh, NgaySinh, GhiChu
+    FROM khachhang
 ";
 $stmt = $conn->prepare($query);
 $stmt->execute();
@@ -118,19 +126,25 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th>Ghi chú</th>
                 <th>Hành động</th>
             </tr>
-            <?php foreach ($customers as $customer): ?>
-            <tr>
-                <td><?= $customer['KHID'] ?></td>
-                <td><?= $customer['Ten'] ?></td>
-                <td><?= $customer['Email'] ?></td>
-                <td><?= $customer['SDT'] ?></td>
-                <td><?= $customer['DiaChi'] ?></td>
-                <td><?= $customer['NgaySinh'] ?></td>
-                <td><?= $customer['GioiTinh'] ?></td>
-                <td><?= $customer['GhiChu'] ?></td>
-                <td><a href="edit_customer.php?id=<?= $customer['KHID'] ?>">Sửa</a></td>
-            </tr>
-            <?php endforeach; ?>
+            <?php if ($customers): ?>
+                <?php foreach ($customers as $customer): ?>
+                    <tr>
+                        <td><?= $customer['KHID'] ?></td>
+                        <td><?= $customer['Ten'] ?></td>
+                        <td><?= $customer['Email'] ?></td>
+                        <td><?= $customer['SDT'] ?></td>
+                        <td><?= $customer['DiaChi'] ?></td>
+                        <td><?= $customer['NgaySinh'] ?></td>
+                        <td><?= $customer['GioiTinh'] ?></td>
+                        <td><?= $customer['GhiChu'] ?></td>
+                        <td><a href="edit_customer.php?id=<?= $customer['KHID'] ?>">Sửa</a></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="9">Không có khách hàng nào.</td>
+                </tr>
+            <?php endif; ?>
         </table>
     </div>
 

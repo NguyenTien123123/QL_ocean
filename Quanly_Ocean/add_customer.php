@@ -1,7 +1,7 @@
 <?php
 include 'db_connect.php';
 
-// Thêm khách hàng mới khi form được submit
+// Kiểm tra nếu có dữ liệu từ form
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ten = $_POST['Ten'];
     $email = $_POST['Email'];
@@ -11,22 +11,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $gioitinh = $_POST['GioiTinh'];
     $ghichu = $_POST['GhiChu'];
 
-    // Thêm vào bảng khách hàng
-    $query = "
-        INSERT INTO khachhang (Ten, Email, SDT, DiaChi) 
-        VALUES (?, ?, ?, ?)
-    ";
-    $stmt = $conn->prepare($query);
-    $stmt->execute([$ten, $email, $sdt, $diachi]);
-    $khid = $conn->lastInsertId(); // Lấy ID của khách hàng vừa thêm
+    // Kiểm tra dữ liệu đầu vào
+    if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $ngaysinh)) {
+        echo "Ngày sinh không hợp lệ!";
+        exit();
+    }
 
-    // Thêm vào bảng chi tiết khách hàng
+    // Cập nhật vào bảng khách hàng
     $query = "
-        INSERT INTO chitietkhachhang (KHID, NgaySinh, GioiTinh, GhiChu) 
-        VALUES (?, ?, ?, ?)
+        INSERT INTO khachhang (Ten, Email, SDT, DiaChi, NgaySinh, GioiTinh, GhiChu)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ";
     $stmt = $conn->prepare($query);
-    $stmt->execute([$khid, $ngaysinh, $gioitinh, $ghichu]);
+    $stmt->execute([$ten, $email, $sdt, $diachi, $ngaysinh, $gioitinh, $ghichu]);
+
+    // Lưu thông báo thành công vào session
+    session_start();
+    $_SESSION['success_message'] = "Thêm khách hàng thành công!";
 
     // Chuyển hướng về trang quản lý khách hàng
     header("Location: quanly_khachhang.php");
