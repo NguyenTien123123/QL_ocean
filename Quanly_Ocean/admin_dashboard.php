@@ -123,7 +123,7 @@
 </head>
 <body>
 
-    <h2>Hệ thống quản lý</h2>
+    <h2>Hệ thống</h2>
 
     <div class="container">
         <div class="menu">
