@@ -48,11 +48,11 @@ $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
         <th>Giá</th>
     </tr>
     <?php foreach ($orderDetails as $detail) { ?>
-    <tr>
-        <td><?= $detail['SPID'] ?></td>
-        <td><?= $detail['TenSP'] ?></td>
-        <td><?= $detail['SoLuong'] ?></td>
-        <td><?= number_format($detail['Gia'], 2) ?> VNĐ</td>
-    </tr>
+        <tr>
+            <td><?= $detail['SPID'] ?></td>
+            <td><?= $detail['TenSP'] ?></td>
+            <td><?= $detail['SoLuong'] ?></td>
+            <td><?= number_format($detail['Gia'], 2) ?> VNĐ</td>
+        </tr>
     <?php } ?>
 </table>

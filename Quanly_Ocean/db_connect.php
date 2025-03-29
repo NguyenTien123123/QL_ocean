@@ -1,7 +1,7 @@
 <?php
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
+$servername = "localhost";
+$username = "root";
+$password = "";
 $dbname = "ql_ocean4";
 
 try {
@@ -13,4 +13,3 @@ try {
     die("Lỗi kết nối CSDL: " . $e->getMessage());
 }
 ?>
-

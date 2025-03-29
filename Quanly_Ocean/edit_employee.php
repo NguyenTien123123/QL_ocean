@@ -49,6 +49,7 @@ if (isset($_GET['id'])) {
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -156,6 +157,7 @@ if (isset($_GET['id'])) {
         }
     </style>
 </head>
+
 <body>
 
     <h2>Hệ thống quản lý</h2>
@@ -195,4 +197,5 @@ if (isset($_GET['id'])) {
     </div>
 
 </body>
+
 </html>

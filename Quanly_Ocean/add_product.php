@@ -3,22 +3,22 @@ include 'db_connect.php';
 
 // Kiểm tra nếu form đã được gửi
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lấy thông tin sản phẩm từ form
-    $tenSP = $_POST['TenSP'];
-    $gia = $_POST['Gia'];
-    $soLuong = $_POST['SoLuong'];
-    $moTa = $_POST['MoTa'];
+  // Lấy thông tin sản phẩm từ form
+  $tenSP = $_POST['TenSP'];
+  $gia = $_POST['Gia'];
+  $soLuong = $_POST['SoLuong'];
+  $moTa = $_POST['MoTa'];
 
-    // Thực hiện truy vấn để thêm sản phẩm vào cơ sở dữ liệu
-    $query = "INSERT INTO sanpham (TenSP, Gia, SoLuong, MoTa) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $stmt->execute([$tenSP, $gia, $soLuong, $moTa]);
+  // Thực hiện truy vấn để thêm sản phẩm vào cơ sở dữ liệu
+  $query = "INSERT INTO sanpham (TenSP, Gia, SoLuong, MoTa) VALUES (?, ?, ?, ?)";
+  $stmt = $conn->prepare($query);
+  $stmt->execute([$tenSP, $gia, $soLuong, $moTa]);
 
-    // Nếu thêm sản phẩm thành công, chuyển hướng về quanly_sanpham.php và thêm tham số 'added=true'
-    echo "<script>
+  // Nếu thêm sản phẩm thành công, chuyển hướng về quanly_sanpham.php và thêm tham số 'added=true'
+  echo "<script>
             alert('Thêm sản phẩm thành công!');
             window.location.href = 'quanly_sanpham.php?added=true';
           </script>";
-    exit();
+  exit();
 }
 ?>

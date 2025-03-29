@@ -1,8 +1,8 @@
 <?php
 // Kết nối cơ sở dữ liệu
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
+$servername = "localhost";
+$username = "root";
+$password = "";
 $dbname = "ql_ocean4"; // Đảm bảo tên cơ sở dữ liệu đúng
 
 try {
@@ -23,6 +23,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,7 +102,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
 
         /* Phần chia khung ở giữa */
         .left-panel {
-            width: 70%;  /* Điều chỉnh phần này chiếm 70% */
+            width: 70%;
+            /* Điều chỉnh phần này chiếm 70% */
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
@@ -109,7 +111,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
         }
 
         .right-panel {
-            width: 25%;  /* Điều chỉnh phần này chiếm 25% */
+            width: 25%;
+            /* Điều chỉnh phần này chiếm 25% */
             background: #222;
             padding: 20px;
             border-radius: 10px;
@@ -126,7 +129,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
             color: white;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid white;
             padding: 10px;
         }
@@ -147,7 +151,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
             color: #FFD700;
         }
 
-        input, textarea {
+        input,
+        textarea {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -177,77 +182,79 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
         }
     </style>
 </head>
+
 <body>
 
-<h2>Hệ thống quản lý</h2>
+    <h2>Hệ thống quản lý</h2>
 
-<div class="container">
-    <div class="menu">
-    <ul>
-            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
-            <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
-            <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
-            <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
-            <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
-            <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
-            <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
-            <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
-        </ul>
-    </div>
-
-    <div id="content">
-        <!-- Phần danh sách sản phẩm -->
-        <div class="left-panel">
-            <h2>Quản lý Sản phẩm</h2>
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Giá</th>
-                    <th>Số lượng</th>
-                    <th>Mô tả</th>
-                    <th>Hành động</th>
-                </tr>
-                <?php if ($products): ?>
-                    <?php foreach ($products as $row) { ?>
-                    <tr>
-                        <td><?= $row['SPID'] ?></td>
-                        <td><?= $row['TenSP'] ?></td>
-                        <td><?= number_format($row['Gia'], 0, ',', '.') ?> đ</td>
-                        <td><?= $row['SoLuong'] ?></td>
-                        <td><?= $row['MoTa'] ?></td>
-                        <td><a href="edit_product.php?id=<?= $row['SPID'] ?>">Sửa</a></td>
-                    </tr>
-                    <?php } ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6">Không có sản phẩm nào!</td>
-                    </tr>
-                <?php endif; ?>
-            </table>
+    <div class="container">
+        <div class="menu">
+            <ul>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
+                <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
+                <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
+                <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
+                <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
+                <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
+                <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
+            </ul>
         </div>
 
-        <!-- Phần thêm sản phẩm -->
-        <div class="right-panel">
-            <h2>Thêm Sản Phẩm Mới</h2>
-            <form method="POST" action="add_product.php">
-                <label for="TenSP">Tên sản phẩm:</label>
-                <input type="text" id="TenSP" name="TenSP" required>
+        <div id="content">
+            <!-- Phần danh sách sản phẩm -->
+            <div class="left-panel">
+                <h2>Quản lý Sản phẩm</h2>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Mô tả</th>
+                        <th>Hành động</th>
+                    </tr>
+                    <?php if ($products): ?>
+                        <?php foreach ($products as $row) { ?>
+                            <tr>
+                                <td><?= $row['SPID'] ?></td>
+                                <td><?= $row['TenSP'] ?></td>
+                                <td><?= number_format($row['Gia'], 0, ',', '.') ?> đ</td>
+                                <td><?= $row['SoLuong'] ?></td>
+                                <td><?= $row['MoTa'] ?></td>
+                                <td><a href="edit_product.php?id=<?= $row['SPID'] ?>">Sửa</a></td>
+                            </tr>
+                        <?php } ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6">Không có sản phẩm nào!</td>
+                        </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
 
-                <label for="Gia">Giá:</label>
-                <input type="number" id="Gia" name="Gia" required>
+            <!-- Phần thêm sản phẩm -->
+            <div class="right-panel">
+                <h2>Thêm Sản Phẩm Mới</h2>
+                <form method="POST" action="add_product.php">
+                    <label for="TenSP">Tên sản phẩm:</label>
+                    <input type="text" id="TenSP" name="TenSP" required>
 
-                <label for="SoLuong">Số lượng:</label>
-                <input type="number" id="SoLuong" name="SoLuong" required>
+                    <label for="Gia">Giá:</label>
+                    <input type="number" id="Gia" name="Gia" required>
 
-                <label for="MoTa">Mô tả:</label>
-                <textarea id="MoTa" name="MoTa" required></textarea>
+                    <label for="SoLuong">Số lượng:</label>
+                    <input type="number" id="SoLuong" name="SoLuong" required>
 
-                <button type="submit">Thêm sản phẩm</button>
-            </form>
+                    <label for="MoTa">Mô tả:</label>
+                    <textarea id="MoTa" name="MoTa" required></textarea>
+
+                    <button type="submit">Thêm sản phẩm</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,7 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .left-panel {
-            width: 70%;  /* Điều chỉnh phần này chiếm 70% */
+            width: 70%;
+            /* Điều chỉnh phần này chiếm 70% */
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
@@ -120,7 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .right-panel {
-            width: 25%;  /* Điều chỉnh phần này chiếm 25% */
+            width: 25%;
+            /* Điều chỉnh phần này chiếm 25% */
             background: #222;
             padding: 20px;
             border-radius: 10px;
@@ -137,7 +140,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid white;
             padding: 10px;
         }
@@ -188,77 +192,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body>
 
-<h2>Hệ thống quản lý</h2>
+    <h2>Hệ thống quản lý</h2>
 
-<div class="container">
-    <div class="menu">
-        <ul>
-            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
-            <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
-            <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
-            <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
-            <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
-            <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
-            <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
-            <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
-        </ul>
-    </div>
-
-    <div id="content">
-        <!-- Phần danh sách nhân viên -->
-        <div class="left-panel">
-            <h2>Quản lý Nhân viên</h2>
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Tên nhân viên</th>
-                    <th>Email</th>
-                    <th>SĐT</th>
-                    <th>Chức vụ</th>
-                    <th>Hành động</th>
-                </tr>
-                <?php if ($employees): ?>
-                    <?php foreach ($employees as $row) { ?>
-                    <tr>
-                        <td><?= $row['NVID'] ?></td>
-                        <td><?= $row['Ten'] ?></td>
-                        <td><?= $row['Email'] ?></td>
-                        <td><?= $row['SDT'] ?></td>
-                        <td><?= $row['ChucVu'] ?></td>
-                        <td><a href="edit_employee.php?id=<?= $row['NVID'] ?>">Sửa</a></td>
-                    </tr>
-                    <?php } ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6">Không có nhân viên nào!</td>
-                    </tr>
-                <?php endif; ?>
-            </table>
+    <div class="container">
+        <div class="menu">
+            <ul>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
+                <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
+                <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
+                <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
+                <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
+                <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
+                <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
+            </ul>
         </div>
 
-        <!-- Phần thêm nhân viên -->
-        <div class="right-panel">
-            <h2>Thêm Nhân Viên Mới</h2>
-            <form method="POST" action="quanly_nhanvien.php">
-                <label for="Ten">Tên nhân viên:</label>
-                <input type="text" id="Ten" name="Ten" required>
+        <div id="content">
+            <!-- Phần danh sách nhân viên -->
+            <div class="left-panel">
+                <h2>Quản lý Nhân viên</h2>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên nhân viên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Chức vụ</th>
+                        <th>Hành động</th>
+                    </tr>
+                    <?php if ($employees): ?>
+                        <?php foreach ($employees as $row) { ?>
+                            <tr>
+                                <td><?= $row['NVID'] ?></td>
+                                <td><?= $row['Ten'] ?></td>
+                                <td><?= $row['Email'] ?></td>
+                                <td><?= $row['SDT'] ?></td>
+                                <td><?= $row['ChucVu'] ?></td>
+                                <td><a href="edit_employee.php?id=<?= $row['NVID'] ?>">Sửa</a></td>
+                            </tr>
+                        <?php } ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6">Không có nhân viên nào!</td>
+                        </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
 
-                <label for="Email">Email:</label>
-                <input type="email" id="Email" name="Email" required>
+            <!-- Phần thêm nhân viên -->
+            <div class="right-panel">
+                <h2>Thêm Nhân Viên Mới</h2>
+                <form method="POST" action="quanly_nhanvien.php">
+                    <label for="Ten">Tên nhân viên:</label>
+                    <input type="text" id="Ten" name="Ten" required>
 
-                <label for="SDT">Số điện thoại:</label>
-                <input type="text" id="SDT" name="SDT" required>
+                    <label for="Email">Email:</label>
+                    <input type="email" id="Email" name="Email" required>
 
-                <label for="ChucVu">Chức vụ:</label>
-                <input type="text" id="ChucVu" name="ChucVu" required>
+                    <label for="SDT">Số điện thoại:</label>
+                    <input type="text" id="SDT" name="SDT" required>
 
-                <button type="submit">Thêm nhân viên</button>
-            </form>
+                    <label for="ChucVu">Chức vụ:</label>
+                    <input type="text" id="ChucVu" name="ChucVu" required>
+
+                    <button type="submit">Thêm nhân viên</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

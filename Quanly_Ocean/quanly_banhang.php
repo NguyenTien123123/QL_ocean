@@ -14,6 +14,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +26,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             text-align: center;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             border: 1px solid black;
         }
@@ -61,31 +63,33 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </style>
 </head>
+
 <body>
 
-<h2>Quản lý Đơn hàng</h2>
+    <h2>Quản lý Đơn hàng</h2>
 
-<!-- Bảng hiển thị đơn hàng -->
-<table>
-    <tr>
-        <th>ID Đơn hàng</th>
-        <th>ID Nhân viên</th>
-        <th>ID Khách hàng</th>
-        <th>Tên Khách hàng</th>
-        <th>Ngày bán</th>
-        <th>Tổng tiền</th>
-    </tr>
-    <?php foreach ($orders as $order) { ?>
-    <tr>
-        <td><?= $order['DHID'] ?></td>
-        <td><?= $order['NVID'] ?></td>
-        <td><?= $order['KHID'] ?></td>
-        <td><?= $order['TenKH'] ?></td>
-        <td><?= $order['NgayBan'] ?></td>
-        <td><?= number_format($order['TongTien'], 2) ?> VNĐ</td>
-    </tr>
-    <?php } ?>
-</table>
+    <!-- Bảng hiển thị đơn hàng -->
+    <table>
+        <tr>
+            <th>ID Đơn hàng</th>
+            <th>ID Nhân viên</th>
+            <th>ID Khách hàng</th>
+            <th>Tên Khách hàng</th>
+            <th>Ngày bán</th>
+            <th>Tổng tiền</th>
+        </tr>
+        <?php foreach ($orders as $order) { ?>
+            <tr>
+                <td><?= $order['DHID'] ?></td>
+                <td><?= $order['NVID'] ?></td>
+                <td><?= $order['KHID'] ?></td>
+                <td><?= $order['TenKH'] ?></td>
+                <td><?= $order['NgayBan'] ?></td>
+                <td><?= number_format($order['TongTien'], 2) ?> VNĐ</td>
+            </tr>
+        <?php } ?>
+    </table>
 
 </body>
+
 </html>

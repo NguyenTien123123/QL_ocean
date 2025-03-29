@@ -15,6 +15,7 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +118,8 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
             color: white;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid white;
             padding: 10px;
         }
@@ -138,7 +140,8 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
             color: #FFD700;
         }
 
-        input, textarea {
+        input,
+        textarea {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
@@ -168,94 +171,96 @@ $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến
         }
     </style>
 </head>
+
 <body>
 
-<h2>Hệ thống quản lý</h2>
+    <h2>Hệ thống quản lý</h2>
 
-<div class="container">
-    <div class="menu">
-    <ul>
-            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
-            <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
-            <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
-            <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
-            <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
-            <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
-            <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
-            <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
-        </ul>
-    </div>
-
-    <div id="content">
-        <div class="left-panel">
-            <h2>Quản lý Khách Hàng</h2>
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Tên khách hàng</th>
-                    <th>Email</th>
-                    <th>SĐT</th>
-                    <th>Địa chỉ</th>
-                    <th>Ngày sinh</th>
-                    <th>Giới tính</th>
-                    <th>Ghi chú</th>
-                    <th>Hành động</th>
-                </tr>
-                <?php if ($customers): ?>
-                    <?php foreach ($customers as $row) { ?>
-                    <tr>
-                        <td><?= $row['KHID'] ?></td>
-                        <td><?= $row['Ten'] ?></td>
-                        <td><?= $row['Email'] ?></td>
-                        <td><?= $row['SDT'] ?></td>
-                        <td><?= $row['DiaChi'] ?></td>
-                        <td><?= $row['NgaySinh'] ?></td>
-                        <td><?= $row['GioiTinh'] ?></td>
-                        <td><?= $row['GhiChu'] ?></td>
-                        <td><a href="edit_customer.php?id=<?= $row['KHID'] ?>">Sửa</a></td>
-                    </tr>
-                    <?php } ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="9">Không có khách hàng nào!</td>
-                    </tr>
-                <?php endif; ?>
-            </table>
+    <div class="container">
+        <div class="menu">
+            <ul>
+                <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+                <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
+                <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
+                <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
+                <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
+                <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
+                <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
+                <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
+            </ul>
         </div>
 
-        <div class="right-panel">
-            <h2>Thêm Khách Hàng Mới</h2>
-            <form method="POST" action="add_customer.php">
-                <label for="Ten">Tên khách hàng:</label>
-                <input type="text" id="Ten" name="Ten" required>
+        <div id="content">
+            <div class="left-panel">
+                <h2>Quản lý Khách Hàng</h2>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên khách hàng</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Địa chỉ</th>
+                        <th>Ngày sinh</th>
+                        <th>Giới tính</th>
+                        <th>Ghi chú</th>
+                        <th>Hành động</th>
+                    </tr>
+                    <?php if ($customers): ?>
+                        <?php foreach ($customers as $row) { ?>
+                            <tr>
+                                <td><?= $row['KHID'] ?></td>
+                                <td><?= $row['Ten'] ?></td>
+                                <td><?= $row['Email'] ?></td>
+                                <td><?= $row['SDT'] ?></td>
+                                <td><?= $row['DiaChi'] ?></td>
+                                <td><?= $row['NgaySinh'] ?></td>
+                                <td><?= $row['GioiTinh'] ?></td>
+                                <td><?= $row['GhiChu'] ?></td>
+                                <td><a href="edit_customer.php?id=<?= $row['KHID'] ?>">Sửa</a></td>
+                            </tr>
+                        <?php } ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="9">Không có khách hàng nào!</td>
+                        </tr>
+                    <?php endif; ?>
+                </table>
+            </div>
 
-                <label for="Email">Email:</label>
-                <input type="email" id="Email" name="Email" required>
+            <div class="right-panel">
+                <h2>Thêm Khách Hàng Mới</h2>
+                <form method="POST" action="add_customer.php">
+                    <label for="Ten">Tên khách hàng:</label>
+                    <input type="text" id="Ten" name="Ten" required>
 
-                <label for="SDT">Số điện thoại:</label>
-                <input type="text" id="SDT" name="SDT" required>
+                    <label for="Email">Email:</label>
+                    <input type="email" id="Email" name="Email" required>
 
-                <label for="DiaChi">Địa chỉ:</label>
-                <textarea id="DiaChi" name="DiaChi" required></textarea>
+                    <label for="SDT">Số điện thoại:</label>
+                    <input type="text" id="SDT" name="SDT" required>
 
-                <label for="NgaySinh">Ngày sinh:</label>
-                <input type="date" id="NgaySinh" name="NgaySinh">
+                    <label for="DiaChi">Địa chỉ:</label>
+                    <textarea id="DiaChi" name="DiaChi" required></textarea>
 
-                <label for="GioiTinh">Giới tính:</label>
-                <select id="GioiTinh" name="GioiTinh">
-                    <option value="Nam">Nam</option>
-                    <option value="Nữ">Nữ</option>
-                    <option value="Khác">Khác</option>
-                </select>
+                    <label for="NgaySinh">Ngày sinh:</label>
+                    <input type="date" id="NgaySinh" name="NgaySinh">
 
-                <label for="GhiChu">Ghi chú:</label>
-                <textarea id="GhiChu" name="GhiChu"></textarea>
+                    <label for="GioiTinh">Giới tính:</label>
+                    <select id="GioiTinh" name="GioiTinh">
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                        <option value="Khác">Khác</option>
+                    </select>
 
-                <button type="submit">Thêm khách hàng</button>
-            </form>
+                    <label for="GhiChu">Ghi chú:</label>
+                    <textarea id="GhiChu" name="GhiChu"></textarea>
+
+                    <button type="submit">Thêm khách hàng</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

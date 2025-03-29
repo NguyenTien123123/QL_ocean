@@ -52,38 +52,38 @@ $imports = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Hành động</th>
     </tr>
     <?php foreach ($imports as $import) { ?>
-    <tr>
-        <td><?= $import['NHID'] ?></td>
-        <td><?= $import['NhanVien'] ?></td>
-        <td><?= $import['NgayNhap'] ?></td>
-        <td><?= number_format($import['TongTien'], 2) ?> VNĐ</td>
-        <td>
-            <a href="chitiet_nhaphang.php?nhid=<?= $import['NHID'] ?>">Chi tiết</a> |
-            <button onclick="deleteImport(<?= $import['NHID'] ?>)">Xóa</button>
-        </td>
-    </tr>
+        <tr>
+            <td><?= $import['NHID'] ?></td>
+            <td><?= $import['NhanVien'] ?></td>
+            <td><?= $import['NgayNhap'] ?></td>
+            <td><?= number_format($import['TongTien'], 2) ?> VNĐ</td>
+            <td>
+                <a href="chitiet_nhaphang.php?nhid=<?= $import['NHID'] ?>">Chi tiết</a> |
+                <button onclick="deleteImport(<?= $import['NHID'] ?>)">Xóa</button>
+            </td>
+        </tr>
     <?php } ?>
 </table>
 
 <script>
-// Thêm đơn nhập hàng mới
-document.getElementById("addImportForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    let nhanvien = document.getElementById("nhanvien").value;
-    let ngaynhap = document.getElementById("ngaynhap").value;
-    let tongtien = document.getElementById("tongtien").value;
+    // Thêm đơn nhập hàng mới
+    document.getElementById("addImportForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        let nhanvien = document.getElementById("nhanvien").value;
+        let ngaynhap = document.getElementById("ngaynhap").value;
+        let tongtien = document.getElementById("tongtien").value;
 
-    fetch("nhaphang_ajax.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `action=add&nhanvien=${nhanvien}&ngaynhap=${ngaynhap}&tongtien=${tongtien}`
-    }).then(() => location.reload());
-});
+        fetch("nhaphang_ajax.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `action=add&nhanvien=${nhanvien}&ngaynhap=${ngaynhap}&tongtien=${tongtien}`
+        }).then(() => location.reload());
+    });
 
-// Xóa đơn nhập hàng
-function deleteImport(id) {
-    if (confirm("Bạn có chắc muốn xóa đơn nhập hàng này?")) {
-        fetch(`quanly_nhaphang.php?delete_id=${id}`).then(() => location.reload());
+    // Xóa đơn nhập hàng
+    function deleteImport(id) {
+        if (confirm("Bạn có chắc muốn xóa đơn nhập hàng này?")) {
+            fetch(`quanly_nhaphang.php?delete_id=${id}`).then(() => location.reload());
+        }
     }
-}
 </script>
