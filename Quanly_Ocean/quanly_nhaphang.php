@@ -260,7 +260,7 @@ $imports = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <label for="ngaynhap">Ngày nhập:</label>
                     <input type="date" id="ngaynhap" required>
 
-                    <label for="tongtien">Tổng tiền:</label>
+                    <label for="tongtien">Tổng tiền_Nhập hàng:</label>
                     <input type="text" id="tongtien" placeholder="Tổng tiền" value="0" required>
 
                     <button type="submit">Thêm đơn nhập hàng</button>

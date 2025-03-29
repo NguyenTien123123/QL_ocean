@@ -244,20 +244,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h3>Danh sách sản phẩm trong đơn hàng</h3>
                 <table>
                     <tr>
-                        <th>ID</th>
+                        <th>STT</th>
+                        <th>ID_SP</th>
                         <th>Tên sản phẩm</th>
+                        <th>Nhà cung cấp</th>
                         <th>Giá</th>
                         <th>Số lượng</th>
-                        <th>Tổng tiền</th>
-                    </tr>
-                    <!-- Dữ liệu sẽ được hiển thị từ CSDL nếu có sản phẩm -->
-                    <!-- Ví dụ: -->
-                    <tr>
-                        <td>1</td>
-                        <td>Sản phẩm 1</td>
-                        <td>100,000 đ</td>
-                        <td>2</td>
-                        <td>200,000 đ</td>
+                        <th>Tổng</th>
                     </tr>
                 </table>
             </div>
@@ -272,14 +265,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <option value="<?= $ncc['NCCID'] ?>"><?= $ncc['TenNCC'] ?></option>
                         <?php } ?>
                     </select>
-
-                    <label for="NgayNhap">Ngày nhập:</label>
-                    <input type="date" id="NgayNhap" name="NgayNhap" required>
-
-                    <label for="TongTien">Tổng tiền:</label>
-                    <input type="number" id="TongTien" name="TongTien" required>
-
-                    <h3>Chi tiết sản phẩm</h3>
                     <div id="products">
                         <div class="product-item">
                             <label for="SPID[]">Chọn sản phẩm:</label>
