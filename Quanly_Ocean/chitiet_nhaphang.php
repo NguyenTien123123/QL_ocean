@@ -30,18 +30,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Lấy NHID vừa thêm vào
     $nhid = $conn->lastInsertId();
 
-    // Lưu thông tin chi tiết đơn hàng
+    // Lưu thông tin chi tiết nhập hàng
     foreach ($_POST['SPID'] as $key => $spid) {
         $soluong = $_POST['SoLuong'][$key];
         $gia = $_POST['Gia'][$key];
 
+        // Thêm vào bảng chi tiết nhập hàng
         $queryInsertDetail = "
-            INSERT INTO chitietnhaphang (DHID, SPID, SoLuong, Gia)
-            VALUES (?, ?, ?, ?)
-        ";
+        INSERT INTO chitietnhaphang (NHID, SPID, SoLuong, Gia)
+        VALUES (?, ?, ?, ?)
+    ";
         $stmtInsertDetail = $conn->prepare($queryInsertDetail);
         $stmtInsertDetail->execute([$nhid, $spid, $soluong, $gia]);
     }
+
 
     // Redirect hoặc thông báo thành công
     header("Location: quanly_nhaphang.php"); // Quay lại trang quản lý nhập hàng
@@ -125,25 +127,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #fff;
             overflow-y: auto;
             display: flex;
+            flex-direction: column;
         }
 
-        /* Chia layout 70% và 25% */
-        .left-panel {
-            width: 70%;
+        /* Điều chỉnh phần "Thông tin đơn hàng" chiếm 100% chiều rộng */
+        .form-panel {
+            width: 100%;
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
         }
 
-        .right-panel {
-            width: 25%;
+        .product-panel {
+            width: 100%;
             background-color: #444;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
             color: white;
-            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .product-panel h4 {
+            text-align: center;
+            color: #FFD700;
+        }
+
+        .product-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .product-selection div {
+            width: 16%;
+            /* 6 sản phẩm trên 1 hàng */
+            text-align: center;
+        }
+
+        .product-selection label {
+            display: block;
+            margin-bottom: 5px;
         }
 
         table {
@@ -239,8 +265,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <div id="content">
-            <!-- Phần danh sách sản phẩm -->
-            <div class="left-panel">
+            <!-- Phần form thêm đơn hàng -->
+            <div class="form-panel">
+                <h3>Thông tin đơn hàng</h3>
+                <form method="POST">
+                    <label for="NVID">Chọn nhà cung cấp:</label>
+                    <select id="NVID" name="NVID" required>
+                        <?php foreach ($nhacungcapList as $ncc) { ?>
+                            <option value="<?= $ncc['NCCID'] ?>"><?= $ncc['TenNCC'] ?></option>
+                        <?php } ?>
+                    </select>
+
+                    <label for="NgayNhap">Ngày nhập:</label>
+                    <input type="date" id="NgayNhap" name="NgayNhap" required>
+
+                    <label for="TongTien">Tổng tiền:</label>
+                    <input type="number" id="TongTien" name="TongTien" required>
+
+                    <h4>Chọn sản phẩm</h4>
+                    <div class="product-selection">
+                        <?php foreach ($sanphamList as $sp) { ?>
+                            <div>
+                                <label for="SPID"><?= $sp['TenSP'] ?></label>
+                                <input type="hidden" name="SPID[]" value="<?= $sp['SPID'] ?>" />
+                                <input type="number" name="SoLuong[]" placeholder="Số lượng" required />
+                                <input type="number" name="Gia[]" value="<?= $sp['Gia'] ?>" readonly required />
+                            </div>
+                        <?php } ?>
+                    </div>
+
+                    <button type="submit">Lưu đơn hàng</button>
+                </form>
+            </div>
+
+            <!-- Phần danh sách sản phẩm trong đơn hàng -->
+            <div class="product-panel">
                 <h3>Danh sách sản phẩm trong đơn hàng</h3>
                 <table>
                     <tr>
@@ -252,44 +311,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <th>Số lượng</th>
                         <th>Tổng</th>
                     </tr>
+                    <?php
+                    if (isset($nhid)) {
+                        // Lấy chi tiết đơn hàng từ CSDL
+                        $queryDetails = "
+                            SELECT c.DHID, c.SPID, c.SoLuong, c.Gia, s.TenSP, n.TenNCC
+                            FROM chitietnhaphang c
+                            JOIN sanpham s ON c.SPID = s.SPID
+                            JOIN nhacungcap n ON s.NCCID = n.NCCID
+                            WHERE c.DHID = :dhid
+                        ";
+                        $stmtDetails = $conn->prepare($queryDetails);
+                        $stmtDetails->bindParam(':dhid', $nhid);
+                        $stmtDetails->execute();
+                        $details = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
+
+                        $stt = 1;
+                        foreach ($details as $detail) {
+                            $total = $detail['SoLuong'] * $detail['Gia'];
+                            echo "
+                                <tr>
+                                    <td>{$stt}</td>
+                                    <td>{$detail['SPID']}</td>
+                                    <td>{$detail['TenSP']}</td>
+                                    <td>{$detail['TenNCC']}</td>
+                                    <td>{$detail['Gia']}</td>
+                                    <td>{$detail['SoLuong']}</td>
+                                    <td>{$total}</td>
+                                </tr>
+                            ";
+                            $stt++;
+                        }
+                    }
+                    ?>
                 </table>
-            </div>
-
-            <!-- Phần form thêm đơn hàng -->
-            <div class="right-panel">
-                <h3>Thông tin đơn hàng</h3>
-                <form method="POST">
-                    <label for="NVID">Chọn nhà cung cấp:</label>
-                    <select id="NVID" name="NVID" required>
-                        <?php foreach ($nhacungcapList as $ncc) { ?>
-                            <option value="<?= $ncc['NCCID'] ?>"><?= $ncc['TenNCC'] ?></option>
-                        <?php } ?>
-                    </select>
-                    <div id="products">
-                        <div class="product-item">
-                            <label for="SPID[]">Chọn sản phẩm:</label>
-                            <select name="SPID[]" required>
-                                <?php foreach ($sanphamList as $sp) { ?>
-                                    <option value="<?= $sp['SPID'] ?>"><?= $sp['TenSP'] ?></option>
-                                <?php } ?>
-                            </select>
-
-                            <label for="SoLuong[]">Số lượng:</label>
-                            <input type="number" name="SoLuong[]" required>
-
-                            <label for="Gia[]">Giá:</label>
-                            <input type="number" name="Gia[]" required>
-                        </div>
-                    </div>
-
-                    <button type="submit">Thêm đơn hàng</button>
-                </form>
-
-                <a href="quanly_nhaphang.php" class="back-btn">Quay lại</a>
             </div>
         </div>
     </div>
-
 </body>
 
 </html>
