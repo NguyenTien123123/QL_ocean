@@ -1,3 +1,6 @@
+<?php
+die("Trang này đã bị vô hiệu hóa.");
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
