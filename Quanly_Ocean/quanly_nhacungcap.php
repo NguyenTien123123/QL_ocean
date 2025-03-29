@@ -169,15 +169,15 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="container">
     <div class="menu">
-        <ul>
-            <li><a href="#" onclick="loadPage('quanly_nhaphang.php')">Quản lý nhập hàng</a></li>
-            <li><a href="#" onclick="loadPage('quanly_banhang.php')">Quản lý bán hàng</a></li>
-            <li><a href="#" onclick="loadPage('quanly_sanpham.php')">Quản lý sản phẩm</a></li>
-            <li><a href="#" onclick="loadPage('quanly_khachhang.php')">Quản lý khách hàng</a></li>
-            <li><a href="#" onclick="loadPage('quanly_nhanvien.php')">Quản lý nhân viên</a></li>
-            <li><a href="#" onclick="loadPage('quanly_nhacungcap.php')">Quản lý nhà cung cấp</a></li>
-            <li><a href="#" onclick="loadPage('thongke_doanhthu_nvnv.php')">Báo cáo doanh thu theo nhân viên</a></li>
-            <li><a href="#" onclick="loadPage('thongke_doanhthu_sp.php')">Báo cáo doanh thu theo sản phẩm</a></li>
+    <ul>
+            <li><a href="quanly_nhaphang.php">Quản lý nhập hàng</a></li>
+            <li><a href="quanly_banhang.php">Quản lý bán hàng</a></li>
+            <li><a href="quanly_sanpham.php">Quản lý sản phẩm</a></li>
+            <li><a href="quanly_khachhang.php">Quản lý khách hàng</a></li>
+            <li><a href="quanly_nhanvien.php">Quản lý nhân viên</a></li>
+            <li><a href="quanly_nhacungcap.php">Quản lý nhà cung cấp</a></li>
+            <li><a href="thongke_doanhthu_nvnv.php">Báo cáo doanh thu theo nhân viên</a></li>
+            <li><a href="thongke_doanhthu_sp.php">Báo cáo doanh thu theo sản phẩm</a></li>
         </ul>
     </div>
 

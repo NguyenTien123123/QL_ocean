@@ -1,7 +1,5 @@
-<?php
-die("Trang này đã bị vô hiệu hóa.");
-?>
-<!DOCTYPE html>
+
+<!-- <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -148,4 +146,4 @@ die("Trang này đã bị vô hiệu hóa.");
     </div>
 
 </body>
-</html>
+</html> -->
