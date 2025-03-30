@@ -1,59 +1,72 @@
 <?php
 include 'db_connect.php'; // Kết nối CSDL
 
-// Lấy danh sách nhà cung cấp và sản phẩm để chọn từ form
-$queryNCC = "SELECT * FROM nhacungcap"; // Thay đổi tên bảng nếu cần
-$stmtNCC = $conn->prepare($queryNCC);
-$stmtNCC->execute();
-$nhacungcapList = $stmtNCC->fetchAll(PDO::FETCH_ASSOC);
+// Kiểm tra nếu có NHID được truyền vào
+if (!isset($_GET['nhid'])) {
+    echo "Không tìm thấy đơn hàng!";
+    exit;
+}
 
-$querySP = "SELECT * FROM sanpham"; // Thay đổi tên bảng nếu cần
+$nhid = $_GET['nhid']; // Lấy NHID từ URL
+
+// Truy vấn thông tin đơn nhập hàng hiện tại
+$queryExisting = "SELECT NVID, NgayNhap, TongTien FROM nhaphang WHERE NHID = ?";
+$stmtExisting = $conn->prepare($queryExisting);
+$stmtExisting->execute([$nhid]);
+$existingOrder = $stmtExisting->fetch(PDO::FETCH_ASSOC);
+
+if (!$existingOrder) {
+    echo "Không tìm thấy đơn hàng!";
+    exit;
+}
+
+$existingNVID = $existingOrder['NVID'];
+$existingNgayNhap = $existingOrder['NgayNhap'];
+$existingTongTien = $existingOrder['TongTien'];
+
+// Lấy danh sách nhân viên
+$queryNV = "SELECT * FROM nhanvien";
+$stmtNV = $conn->prepare($queryNV);
+$stmtNV->execute();
+$nhanvienList = $stmtNV->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy danh sách sản phẩm
+$querySP = "SELECT * FROM sanpham";
 $stmtSP = $conn->prepare($querySP);
 $stmtSP->execute();
 $sanphamList = $stmtSP->fetchAll(PDO::FETCH_ASSOC);
 
 // Xử lý khi người dùng submit form
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nhid = $_POST['NHID']; // NHID của đơn hàng cần cập nhật
     $nvid = $_POST['NVID'];
     $ngaynhap = $_POST['NgayNhap'];
     $tongtien = $_POST['TongTien'];
 
     // Cập nhật thông tin đơn hàng
-    $queryUpdate = "
-        UPDATE nhaphang 
-        SET NVID = ?, NgayNhap = ?, TongTien = ? 
-        WHERE NHID = ?
-    ";
+    $queryUpdate = "UPDATE nhaphang SET NVID = ?, NgayNhap = ?, TongTien = ? WHERE NHID = ?";
     $stmtUpdate = $conn->prepare($queryUpdate);
     $stmtUpdate->execute([$nvid, $ngaynhap, $tongtien, $nhid]);
 
-    // Cập nhật chi tiết nhập hàng
-    // Xóa tất cả sản phẩm cũ trong chi tiết nhập hàng
+    // Xóa chi tiết nhập hàng cũ
     $queryDeleteDetails = "DELETE FROM chitietnhaphang WHERE NHID = ?";
     $stmtDeleteDetails = $conn->prepare($queryDeleteDetails);
     $stmtDeleteDetails->execute([$nhid]);
 
-    // Thêm lại các sản phẩm mới cho đơn hàng
+    // Thêm lại chi tiết nhập hàng mới
     foreach ($_POST['SPID'] as $key => $spid) {
         $soluong = $_POST['SoLuong'][$key];
         $gia = $_POST['Gia'][$key];
 
-        // Thêm vào bảng chi tiết nhập hàng
-        $queryInsertDetail = "
-            INSERT INTO chitietnhaphang (NHID, SPID, SoLuong, Gia)
-            VALUES (?, ?, ?, ?)
-        ";
+        $queryInsertDetail = "INSERT INTO chitietnhaphang (NHID, SPID, SoLuong, Gia) VALUES (?, ?, ?, ?)";
         $stmtInsertDetail = $conn->prepare($queryInsertDetail);
         $stmtInsertDetail->execute([$nhid, $spid, $soluong, $gia]);
     }
 
     // Redirect hoặc thông báo thành công
-    header("Location: quanly_nhaphang.php"); // Quay lại trang quản lý nhập hàng
+    header("Location: quanly_nhaphang.php");
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -289,14 +302,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </option>
                         <?php } ?>
                     </select>
-                    <label for="NCCID">Chọn nhà cung cấp:</label>
+                    <!-- <label for="NCCID">Chọn nhà cung cấp:</label>
                     <select id="NCCID" name="NCCID" required>
                         <?php foreach ($nhacungcapList as $ncc) { ?>
                             <option value="<?= $ncc['NCCID'] ?>" <?= ($ncc['NCCID'] == $existingNCCID) ? 'selected' : '' ?>>
                                 <?= $ncc['TenNCC'] ?>
                             </option>
                         <?php } ?>
-                    </select>
+                    </select> -->
                     <label for="NgayNhap">Ngày nhập:</label>
                     <input type="date" id="NgayNhap" name="NgayNhap" value="<?= $existingNgayNhap ?>" required>
                 
