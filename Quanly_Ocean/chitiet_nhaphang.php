@@ -274,19 +274,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h3>Thông tin đơn hàng</h3>
                 <form method="POST">
                     <input type="hidden" name="NHID" value="<?= $_GET['nhid'] ?>" /> <!-- Truyền NHID từ URL -->
-                    <label for="NVID">Chọn nhân viên:</label>
-                    <label for="NVID">Chọn nhà cung cấp:</label>
+                    <label for="NVID">Nhân viên nhập hàng:</label>
                     <select id="NVID" name="NVID" required>
+                        <?php
+                        // Truy vấn danh sách nhân viên
+                        $queryNV = "SELECT * FROM nhanvien"; // Thay đổi tên bảng nếu cần
+                        $stmtNV = $conn->prepare($queryNV);
+                        $stmtNV->execute();
+                        $nhanvienList = $stmtNV->fetchAll(PDO::FETCH_ASSOC);
+                        ?>
+                        <?php foreach ($nhanvienList as $nv) { ?>
+                            <option value="<?= $nv['NVID'] ?>" <?= ($nv['NVID'] == $existingNVID) ? 'selected' : '' ?>>
+                                <?= $nv['Ten'] ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                    <label for="NCCID">Chọn nhà cung cấp:</label>
+                    <select id="NCCID" name="NCCID" required>
                         <?php foreach ($nhacungcapList as $ncc) { ?>
-                            <option value="<?= $ncc['NCCID'] ?>" <?= ($ncc['NCCID'] == $existingNVID) ? 'selected' : '' ?>>
+                            <option value="<?= $ncc['NCCID'] ?>" <?= ($ncc['NCCID'] == $existingNCCID) ? 'selected' : '' ?>>
                                 <?= $ncc['TenNCC'] ?>
                             </option>
                         <?php } ?>
                     </select>
-
                     <label for="NgayNhap">Ngày nhập:</label>
                     <input type="date" id="NgayNhap" name="NgayNhap" value="<?= $existingNgayNhap ?>" required>
-
+                
                     <label for="TongTien">Tổng tiền:</label>
                     <input type="number" id="TongTien" name="TongTien" value="<?= $existingTongTien ?>" required>
 
@@ -311,8 +324,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h3>Danh sách sản phẩm trong đơn hàng</h3>
                 <table>
                     <?php
-                    include 'db_connect.php'; // Kết nối CSDL
-                    
                     // Kiểm tra nếu có NHID được truyền vào
                     if (!isset($_GET['nhid'])) {
                         echo "Không tìm thấy đơn hàng!";
@@ -333,23 +344,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
                     ?>
 
-                    <h3>Danh sách sản phẩm trong đơn hàng #<?= $nhid ?></h3>
-                    <table>
+                    <tr>
+                        <th>Mã sản phẩm</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                    </tr>
+                    <?php foreach ($orderDetails as $item) { ?>
                         <tr>
-                            <th>Mã sản phẩm</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Giá</th>
+                            <td><?= $item['SPID'] ?></td>
+                            <td><?= $item['TenSP'] ?></td>
+                            <td><?= $item['SoLuong'] ?></td>
+                            <td><?= number_format($item['Gia'], 0) ?> VNĐ</td>
                         </tr>
-                        <?php foreach ($orderDetails as $item) { ?>
-                            <tr>
-                                <td><?= $item['SPID'] ?></td>
-                                <td><?= $item['TenSP'] ?></td>
-                                <td><?= $item['SoLuong'] ?></td>
-                                <td><?= number_format($item['Gia'], 0) ?> VNĐ</td>
-                            </tr>
-                        <?php } ?>
-                    </table>
+                    <?php } ?>
+                </table>
             </div>
         </div>
     </div>
