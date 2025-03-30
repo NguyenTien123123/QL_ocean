@@ -14,42 +14,46 @@ $sanphamList = $stmtSP->fetchAll(PDO::FETCH_ASSOC);
 
 // Xử lý khi người dùng submit form
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lưu thông tin đơn nhập hàng
+    $nhid = $_POST['NHID']; // NHID của đơn hàng cần cập nhật
     $nvid = $_POST['NVID'];
     $ngaynhap = $_POST['NgayNhap'];
     $tongtien = $_POST['TongTien'];
 
-    // Thêm vào bảng nhaphang
-    $queryInsert = "
-        INSERT INTO nhaphang (NVID, NgayNhap, TongTien) 
-        VALUES (?, ?, ?)
+    // Cập nhật thông tin đơn hàng
+    $queryUpdate = "
+        UPDATE nhaphang 
+        SET NVID = ?, NgayNhap = ?, TongTien = ? 
+        WHERE NHID = ?
     ";
-    $stmtInsert = $conn->prepare($queryInsert);
-    $stmtInsert->execute([$nvid, $ngaynhap, $tongtien]);
+    $stmtUpdate = $conn->prepare($queryUpdate);
+    $stmtUpdate->execute([$nvid, $ngaynhap, $tongtien, $nhid]);
 
-    // Lấy NHID vừa thêm vào
-    $nhid = $conn->lastInsertId();
+    // Cập nhật chi tiết nhập hàng
+    // Xóa tất cả sản phẩm cũ trong chi tiết nhập hàng
+    $queryDeleteDetails = "DELETE FROM chitietnhaphang WHERE NHID = ?";
+    $stmtDeleteDetails = $conn->prepare($queryDeleteDetails);
+    $stmtDeleteDetails->execute([$nhid]);
 
-    // Lưu thông tin chi tiết nhập hàng
+    // Thêm lại các sản phẩm mới cho đơn hàng
     foreach ($_POST['SPID'] as $key => $spid) {
         $soluong = $_POST['SoLuong'][$key];
         $gia = $_POST['Gia'][$key];
 
         // Thêm vào bảng chi tiết nhập hàng
         $queryInsertDetail = "
-        INSERT INTO chitietnhaphang (NHID, SPID, SoLuong, Gia)
-        VALUES (?, ?, ?, ?)
-    ";
+            INSERT INTO chitietnhaphang (NHID, SPID, SoLuong, Gia)
+            VALUES (?, ?, ?, ?)
+        ";
         $stmtInsertDetail = $conn->prepare($queryInsertDetail);
         $stmtInsertDetail->execute([$nhid, $spid, $soluong, $gia]);
     }
-
 
     // Redirect hoặc thông báo thành công
     header("Location: quanly_nhaphang.php"); // Quay lại trang quản lý nhập hàng
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -132,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         /* Điều chỉnh phần "Thông tin đơn hàng" chiếm 100% chiều rộng */
         .form-panel {
-            width: 100%;
+            width: 98%;
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
@@ -140,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         .product-panel {
-            width: 100%;
+            width: 98%;
             background-color: #444;
             border-radius: 10px;
             padding: 20px;
@@ -269,18 +273,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-panel">
                 <h3>Thông tin đơn hàng</h3>
                 <form method="POST">
+                    <input type="hidden" name="NHID" value="<?= $_GET['nhid'] ?>" /> <!-- Truyền NHID từ URL -->
+                    <label for="NVID">Chọn nhân viên:</label>
                     <label for="NVID">Chọn nhà cung cấp:</label>
                     <select id="NVID" name="NVID" required>
                         <?php foreach ($nhacungcapList as $ncc) { ?>
-                            <option value="<?= $ncc['NCCID'] ?>"><?= $ncc['TenNCC'] ?></option>
+                            <option value="<?= $ncc['NCCID'] ?>" <?= ($ncc['NCCID'] == $existingNVID) ? 'selected' : '' ?>>
+                                <?= $ncc['TenNCC'] ?>
+                            </option>
                         <?php } ?>
                     </select>
 
                     <label for="NgayNhap">Ngày nhập:</label>
-                    <input type="date" id="NgayNhap" name="NgayNhap" required>
+                    <input type="date" id="NgayNhap" name="NgayNhap" value="<?= $existingNgayNhap ?>" required>
 
                     <label for="TongTien">Tổng tiền:</label>
-                    <input type="number" id="TongTien" name="TongTien" required>
+                    <input type="number" id="TongTien" name="TongTien" value="<?= $existingTongTien ?>" required>
 
                     <h4>Chọn sản phẩm</h4>
                     <div class="product-selection">
@@ -294,7 +302,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php } ?>
                     </div>
 
-                    <button type="submit">Lưu đơn hàng</button>
+                    <button type="submit">Cập nhật đơn hàng</button>
                 </form>
             </div>
 
@@ -302,49 +310,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="product-panel">
                 <h3>Danh sách sản phẩm trong đơn hàng</h3>
                 <table>
-                    <tr>
-                        <th>STT</th>
-                        <th>ID_SP</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Nhà cung cấp</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Tổng</th>
-                    </tr>
                     <?php
-                    if (isset($nhid)) {
-                        // Lấy chi tiết đơn hàng từ CSDL
-                        $queryDetails = "
-                            SELECT c.DHID, c.SPID, c.SoLuong, c.Gia, s.TenSP, n.TenNCC
-                            FROM chitietnhaphang c
-                            JOIN sanpham s ON c.SPID = s.SPID
-                            JOIN nhacungcap n ON s.NCCID = n.NCCID
-                            WHERE c.DHID = :dhid
-                        ";
-                        $stmtDetails = $conn->prepare($queryDetails);
-                        $stmtDetails->bindParam(':dhid', $nhid);
-                        $stmtDetails->execute();
-                        $details = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
-
-                        $stt = 1;
-                        foreach ($details as $detail) {
-                            $total = $detail['SoLuong'] * $detail['Gia'];
-                            echo "
-                                <tr>
-                                    <td>{$stt}</td>
-                                    <td>{$detail['SPID']}</td>
-                                    <td>{$detail['TenSP']}</td>
-                                    <td>{$detail['TenNCC']}</td>
-                                    <td>{$detail['Gia']}</td>
-                                    <td>{$detail['SoLuong']}</td>
-                                    <td>{$total}</td>
-                                </tr>
-                            ";
-                            $stt++;
-                        }
+                    include 'db_connect.php'; // Kết nối CSDL
+                    
+                    // Kiểm tra nếu có NHID được truyền vào
+                    if (!isset($_GET['nhid'])) {
+                        echo "Không tìm thấy đơn hàng!";
+                        exit;
                     }
+
+                    $nhid = $_GET['nhid']; // Lấy NHID từ URL
+                    
+                    // Truy vấn danh sách sản phẩm trong đơn nhập hàng
+                    $queryDetails = "
+    SELECT cth.SPID, sp.TenSP, cth.SoLuong, cth.Gia
+    FROM chitietnhaphang cth
+    JOIN sanpham sp ON cth.SPID = sp.SPID
+    WHERE cth.NHID = ?
+";
+                    $stmtDetails = $conn->prepare($queryDetails);
+                    $stmtDetails->execute([$nhid]);
+                    $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
                     ?>
-                </table>
+
+                    <h3>Danh sách sản phẩm trong đơn hàng #<?= $nhid ?></h3>
+                    <table>
+                        <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Giá</th>
+                        </tr>
+                        <?php foreach ($orderDetails as $item) { ?>
+                            <tr>
+                                <td><?= $item['SPID'] ?></td>
+                                <td><?= $item['TenSP'] ?></td>
+                                <td><?= $item['SoLuong'] ?></td>
+                                <td><?= number_format($item['Gia'], 0) ?> VNĐ</td>
+                            </tr>
+                        <?php } ?>
+                    </table>
             </div>
         </div>
     </div>
