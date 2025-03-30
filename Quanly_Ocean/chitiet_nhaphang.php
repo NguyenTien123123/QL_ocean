@@ -67,6 +67,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit;
 }
 ?>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let selectedTable = document.getElementById("selected-products");
+
+        document.querySelectorAll(".product-checkbox").forEach(function (checkbox) {
+            checkbox.addEventListener("change", function () {
+                let productId = this.getAttribute("data-id");
+                let productName = this.getAttribute("data-name");
+                let productPrice = this.getAttribute("data-price");
+
+                if (this.checked) {
+                    // Thêm sản phẩm vào bảng
+                    let row = document.createElement("tr");
+                    row.setAttribute("id", "row-" + productId);
+                    row.innerHTML = `
+                        <td>${productName}</td>
+                        <td><input type="number" name="SoLuong[]" value="1" min="1"></td>
+                        <td><input type="number" name="Gia[]" value="${productPrice}" readonly></td>
+                        <td><button type="button" onclick="removeProduct('${productId}')">Xóa</button></td>
+                        <input type="hidden" name="SPID[]" value="${productId}">
+                    `;
+                    selectedTable.appendChild(row);
+                } else {
+                    // Xóa sản phẩm khỏi bảng nếu bỏ chọn
+                    document.getElementById("row-" + productId)?.remove();
+                }
+            });
+        });
+    });
+
+    function removeProduct(productId) {
+        document.getElementById("row-" + productId)?.remove();
+        document.querySelector(`.product-checkbox[data-id='${productId}']`).checked = false;
+    }
+</script>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -302,17 +338,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </option>
                         <?php } ?>
                     </select>
-                    <!-- <label for="NCCID">Chọn nhà cung cấp:</label>
-                    <select id="NCCID" name="NCCID" required>
-                        <?php foreach ($nhacungcapList as $ncc) { ?>
-                            <option value="<?= $ncc['NCCID'] ?>" <?= ($ncc['NCCID'] == $existingNCCID) ? 'selected' : '' ?>>
-                                <?= $ncc['TenNCC'] ?>
-                            </option>
-                        <?php } ?>
-                    </select> -->
                     <label for="NgayNhap">Ngày nhập:</label>
                     <input type="date" id="NgayNhap" name="NgayNhap" value="<?= $existingNgayNhap ?>" required>
-                
+
                     <label for="TongTien">Tổng tiền:</label>
                     <input type="number" id="TongTien" name="TongTien" value="<?= $existingTongTien ?>" required>
 
@@ -320,13 +348,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="product-selection">
                         <?php foreach ($sanphamList as $sp) { ?>
                             <div>
-                                <label for="SPID"><?= $sp['TenSP'] ?></label>
-                                <input type="hidden" name="SPID[]" value="<?= $sp['SPID'] ?>" />
-                                <input type="number" name="SoLuong[]" placeholder="Số lượng" required />
-                                <input type="number" name="Gia[]" value="<?= $sp['Gia'] ?>" readonly required />
+                                <input type="checkbox" class="product-checkbox" data-id="<?= $sp['SPID'] ?>"
+                                    data-name="<?= $sp['TenSP'] ?>" data-price="<?= $sp['Gia'] ?>">
+                                <label><?= $sp['TenSP'] ?></label>
                             </div>
                         <?php } ?>
                     </div>
+                    <h3>Danh sách sản phẩm đã chọn</h3>
+                    <table id="selected-products">
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Giá nhập</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </table>
 
                     <button type="submit">Cập nhật đơn hàng</button>
                 </form>
