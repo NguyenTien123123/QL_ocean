@@ -1,39 +1,199 @@
 <?php
 include 'db_connect.php'; // Kết nối CSDL
 
-// Lấy ID đơn hàng từ URL
-$dhid = isset($_GET['dhid']) ? $_GET['dhid'] : 0;
-
-// Truy vấn chi tiết đơn hàng
-$query = "
-    SELECT dh.DHID, dh.NVID, dh.KHID, dh.NgayBan, dh.TongTien, k.Ten AS KhachHang
-    FROM donhang dh
-    LEFT JOIN khachhang k ON dh.KHID = k.KHID
-    WHERE dh.DHID = ?
-";
-
-
-$stmt = $conn->prepare($query);
-$stmt->execute([$dhid]);
-$order = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Kiểm tra nếu đơn hàng không tồn tại
-if (!$order) {
-    echo "Không tìm thấy đơn hàng.";
+// Kiểm tra nếu có DHID được truyền vào
+if (!isset($_GET['dhid'])) {
+    echo "Không tìm thấy đơn hàng!";
     exit;
 }
 
-// Lấy chi tiết sản phẩm trong đơn hàng
-$queryDetails = "
-    SELECT ct.SPID, s.TenSP, ct.SoLuong, ct.Gia
-    FROM chitietdonhang ct
-    LEFT JOIN sanpham s ON ct.SPID = s.SPID
-    WHERE ct.DHID = ?
-";
-$stmtDetails = $conn->prepare($queryDetails);
-$stmtDetails->execute([$dhid]);
-$orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
+$dhid = $_GET['dhid']; // Lấy DHID từ URL
+
+// Truy vấn thông tin đơn bán hàng hiện tại
+$queryExisting = "SELECT KHID, NVID, NgayBan, TongTien FROM donhang WHERE DHID = ?";
+$stmtExisting = $conn->prepare($queryExisting);
+$stmtExisting->execute([$dhid]);
+$existingOrder = $stmtExisting->fetch(PDO::FETCH_ASSOC);
+
+if (!$existingOrder) {
+    echo "Không tìm thấy đơn hàng!";
+    exit;
+}
+
+$existingKHID = $existingOrder['KHID'];
+$existingNVID = $existingOrder['NVID'];
+$existingNgayBan = $existingOrder['NgayBan'];
+$existingTongTien = $existingOrder['TongTien'];
+
+// Lấy danh sách nhân viên và khách hàng
+$queryNV = "SELECT * FROM nhanvien";
+$stmtNV = $conn->prepare($queryNV);
+$stmtNV->execute();
+$nhanvienList = $stmtNV->fetchAll(PDO::FETCH_ASSOC);
+
+$queryKH = "SELECT * FROM khachhang";
+$stmtKH = $conn->prepare($queryKH);
+$stmtKH->execute();
+$khachhangList = $stmtKH->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy danh sách sản phẩm
+$querySP = "SELECT * FROM sanpham";
+$stmtSP = $conn->prepare($querySP);
+$stmtSP->execute();
+$sanphamList = $stmtSP->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy danh sách chi tiết sản phẩm trong đơn hàng
+$queryOrderDetails = "SELECT ct.SPID, s.TenSP, ct.SoLuong, ct.Gia FROM chitietdonhang ct
+                      JOIN sanpham s ON ct.SPID = s.SPID WHERE ct.DHID = ?";
+$stmtOrderDetails = $conn->prepare($queryOrderDetails);
+$stmtOrderDetails->execute([$dhid]);
+$orderDetails = $stmtOrderDetails->fetchAll(PDO::FETCH_ASSOC);
+
+// Xử lý khi người dùng submit form
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $khid = $_POST['KHID'];
+    $nvid = $_POST['NVID'];
+    $ngayban = $_POST['NgayBan'];
+    $tongtien = $_POST['TongTien'];
+
+    // Cập nhật thông tin đơn hàng
+    $queryUpdate = "UPDATE donhang SET KHID = ?, NVID = ?, NgayBan = ?, TongTien = ? WHERE DHID = ?";
+    $stmtUpdate = $conn->prepare($queryUpdate);
+    $stmtUpdate->execute([$khid, $nvid, $ngayban, $tongtien, $dhid]);
+
+    // Xóa chi tiết đơn hàng cũ
+    $queryDeleteDetails = "DELETE FROM chitietdonhang WHERE DHID = ?";
+    $stmtDeleteDetails = $conn->prepare($queryDeleteDetails);
+    $stmtDeleteDetails->execute([$dhid]);
+
+    // Thêm lại chi tiết đơn hàng mới
+    foreach ($_POST['SPID'] as $key => $spid) {
+        $soluong = $_POST['SoLuong'][$key];
+        $gia = $_POST['Gia'][$key];
+
+        // Cập nhật chi tiết đơn hàng
+        $queryInsertDetail = "INSERT INTO chitietdonhang (DHID, SPID, SoLuong, Gia) VALUES (?, ?, ?, ?)";
+        $stmtInsertDetail = $conn->prepare($queryInsertDetail);
+        $stmtInsertDetail->execute([$dhid, $spid, $soluong, $gia]);
+    }
+    // Redirect hoặc thông báo thành công
+    header("Location: quanly_banhang.php");
+    exit;
+}
 ?>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectProduct = document.getElementById("selectProduct");
+        const selectedTable = document.getElementById("selectedProducts");
+
+        selectProduct.addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const productId = selectedOption.value;
+            const productName = selectedOption.getAttribute("data-name");
+            const productPrice = selectedOption.getAttribute("data-gia");
+
+            // Kiểm tra nếu sản phẩm đã được chọn
+            if (document.getElementById("row-" + productId)) {
+                alert("Sản phẩm này đã có trong danh sách!");
+                return; // Không thêm nếu sản phẩm đã tồn tại
+            }
+
+            if (productId) {
+                // Thêm sản phẩm vào bảng
+                let row = document.createElement("tr");
+                row.setAttribute("id", "row-" + productId);
+                row.innerHTML = `
+                <td>${productName}</td>
+                <td><input type="number" name="SoLuong[]" value="1" min="1" required></td>
+                <td><input type="number" name="Gia[]" value="${productPrice}" readonly required></td>
+                <td><button type="button" onclick="removeProduct('${productId}')">Xóa</button></td>
+                <input type="hidden" name="SPID[]" value="${productId}">
+            `;
+                selectedTable.appendChild(row);
+                // Cập nhật lại tổng tiền khi thêm sản phẩm
+                updateTotalAmount();
+            }
+        });
+
+        function removeProduct(productId) {
+            // Xóa sản phẩm khỏi bảng
+            document.getElementById("row-" + productId)?.remove();
+            // Cập nhật lại tổng tiền khi xóa sản phẩm
+            updateTotalAmount();
+        }
+
+        // Cập nhật lại tổng tiền sau khi thêm hoặc xóa sản phẩm
+        function updateTotalAmount() {
+            let totalAmount = 0;
+            const rows = document.querySelectorAll("#selectedProducts tr");
+            rows.forEach(row => {
+                const quantity = row.querySelector("input[name='SoLuong[]']").value;
+                const price = row.querySelector("input[name='Gia[]']").value;
+                if (quantity && price) {
+                    totalAmount += quantity * price;
+                }
+            });
+            // Cập nhật giá trị tổng tiền vào input
+            document.getElementById("TongTien").value = totalAmount;
+        }
+    });
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const selectProduct = document.getElementById("selectProduct");
+    //     const selectedTable = document.getElementById("selectedProducts");
+
+    //     selectProduct.addEventListener("change", function () {
+    //         const selectedOption = this.options[this.selectedIndex];
+    //         const productId = selectedOption.value;
+    //         const productName = selectedOption.getAttribute("data-name");
+    //         const productPrice = selectedOption.getAttribute("data-gia");
+
+    //         // Kiểm tra nếu sản phẩm đã được chọn
+    //         if (document.getElementById("row-" + productId)) {
+    //             alert("Sản phẩm này đã có trong danh sách!");
+    //             return; // Không thêm nếu sản phẩm đã tồn tại
+    //         }
+
+    //         if (productId) {
+    //             // Thêm sản phẩm vào bảng
+    //             let row = document.createElement("tr");
+    //             row.setAttribute("id", "row-" + productId);
+    //             row.innerHTML = `
+    //         <td>${productName}</td>
+    //         <td><input type="number" name="SoLuong[]" value="1" min="1" required></td>
+    //         <td><input type="number" name="Gia[]" value="${productPrice}" readonly required></td>
+    //         <td><button type="button" onclick="removeProduct('${productId}')">Xóa</button></td>
+    //         <input type="hidden" name="SPID[]" value="${productId}">
+    //     `;
+    //             selectedTable.appendChild(row);
+    //         }
+    //     });
+    //     function removeProduct(productId) {
+    //         // Xóa sản phẩm khỏi bảng
+    //         document.getElementById("row-" + productId)?.remove();
+    //         // Cập nhật lại tổng tiền khi xóa sản phẩm
+    //         updateTotalAmount();
+    //     }
+
+    //     // Cập nhật lại tổng tiền sau khi xóa
+    //     function updateTotalAmount() {
+    //         let totalAmount = 0;
+    //         const rows = document.querySelectorAll("#selectedProducts tr");
+    //         rows.forEach(row => {
+    //             const quantity = row.querySelector("input[name='SoLuong[]']").value;
+    //             const price = row.querySelector("input[name='Gia[]']").value;
+    //             if (quantity && price) {
+    //                 totalAmount += quantity * price;
+    //             }
+    //         });
+    //         // Cập nhật giá trị tổng tiền vào input
+    //         document.getElementById("TongTien").value = totalAmount;
+    //     }
+
+    // });
+
+</script>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -41,7 +201,7 @@ $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết đơn hàng</title>
+    <title>Chi tiết đơn hàng bán</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -111,6 +271,8 @@ $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
             height: calc(100vh - 40px);
             color: #fff;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .form-panel {
@@ -155,6 +317,37 @@ $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
             color: black;
         }
 
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            background: #333;
+            color: white;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 15px;
+            background: #FFD700;
+            color: black;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff9900;
+        }
+
         .back-btn {
             background-color: #ffcc00;
             padding: 10px 20px;
@@ -176,7 +369,7 @@ $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-    <h2>Chi tiết đơn hàng</h2>
+    <h2>Chi tiết đơn hàng bán</h2>
 
     <div class="container">
         <div class="menu">
@@ -193,40 +386,102 @@ $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div id="content">
-            <!-- Phần thông tin đơn hàng -->
             <div class="form-panel">
                 <h3>Thông tin đơn hàng</h3>
-                <p><strong>ID Đơn hàng:</strong> <?= $order['DHID'] ?></p>
-                <p><strong>Khách hàng:</strong> <?= $order['KhachHang'] ?></p>
-                <p><strong>Ngày bán:</strong> <?= $order['NgayBan'] ?></p>
-                <p><strong>Tổng tiền:</strong> <?= number_format($order['TongTien'], 2) ?> VNĐ</p>
-            </div>
+                <form method="POST">
+                    <input type="hidden" name="DHID" value="<?= $_GET['dhid'] ?>" />
+                    <label for="KHID">Khách hàng:</label>
+                    <select id="KHID" name="KHID" required>
+                        <?php foreach ($khachhangList as $kh) { ?>
+                            <option value="<?= $kh['KHID'] ?>" <?= ($kh['KHID'] == $existingKHID) ? 'selected' : '' ?>>
+                                <?= $kh['Ten'] ?>
+                            </option>
+                        <?php } ?>
+                    </select>
 
-            <!-- Phần danh sách sản phẩm trong đơn hàng -->
-            <div class="product-panel">
-                <h4>Danh sách sản phẩm trong đơn hàng</h4>
-                <table>
-                    <tr>
-                        <th>ID Sản phẩm</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                    </tr>
-                    <?php foreach ($orderDetails as $item) { ?>
+                    <label for="NVID">Nhân viên bán hàng:</label>
+                    <select id="NVID" name="NVID" required>
+                        <?php foreach ($nhanvienList as $nv) { ?>
+                            <option value="<?= $nv['NVID'] ?>" <?= ($nv['NVID'] == $existingNVID) ? 'selected' : '' ?>>
+                                <?= $nv['Ten'] ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+
+                    <label for="NgayBan">Ngày bán:</label>
+                    <input type="date" id="NgayBan" name="NgayBan" value="<?= $existingNgayBan ?>" required>
+
+                    <label for="TongTien">Tổng tiền:</label>
+                    <input type="number" id="TongTien" name="TongTien" value="<?= $existingTongTien ?>" required>
+
+                    <label for="selectProduct">Chọn sản phẩm:</label>
+                    <select id="selectProduct">
+                        <option value="">-- Chọn sản phẩm --</option>
+                        <?php foreach ($sanphamList as $sp) { ?>
+                            <option value="<?= $sp['SPID'] ?>" data-name="<?= $sp['TenSP'] ?>" data-gia="<?= $sp['Gia'] ?>">
+                                <?= $sp['TenSP'] ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+
+                    <table id="selectedProducts">
                         <tr>
-                            <td><?= $item['SPID'] ?></td>
-                            <td><?= $item['TenSP'] ?></td>
-                            <td><?= $item['SoLuong'] ?></td>
-                            <td><?= number_format($item['Gia'], 2) ?> VNĐ</td>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Giá bán</th>
+                            <th>Hành động</th>
                         </tr>
-                    <?php } ?>
-                </table>
-            </div>
+                        <?php foreach ($orderDetails as $detail) { ?>
+                            <tr id="row-<?= $detail['SPID'] ?>">
+                                <td><?= $detail['TenSP'] ?></td>
+                                <td><input type="number" name="SoLuong[]" value="<?= $detail['SoLuong'] ?>" min="1"
+                                        required></td>
+                                <td><input type="number" name="Gia[]" value="<?= $detail['Gia'] ?>" readonly required></td>
+                                <td><button type="button" onclick="removeProduct('<?= $detail['SPID'] ?>')">Xóa</button>
+                                </td>
+                                <input type="hidden" name="SPID[]" value="<?= $detail['SPID'] ?>">
+                            </tr>
+                        <?php } ?>
+                    </table>
 
-            <a href="quanly_banhang.php" class="back-btn">Quay lại</a>
+                    <h3>Danh sách sản phẩm trong đơn hàng</h3>
+                    <table id="orderProductsTable">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá bán</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $index = 1;
+                            $addedProductIds = []; // Mảng để lưu các SPID đã được thêm vào
+                            foreach ($orderDetails as $detail) {
+                                if (!in_array($detail['SPID'], $addedProductIds)) {
+                                    $totalPrice = $detail['SoLuong'] * $detail['Gia'];
+                                    $addedProductIds[] = $detail['SPID']; // Lưu SPID đã thêm vào
+                                    ?>
+                                    <tr>
+                                        <td><?= $index++ ?></td>
+                                        <td><?= $detail['TenSP'] ?></td>
+                                        <td><?= $detail['SoLuong'] ?></td>
+                                        <td><?= number_format($detail['Gia'], 0, ',', '.') ?> VND</td>
+                                        <td><?= number_format($totalPrice, 0, ',', '.') ?> VND</td>
+                                    </tr>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                    <button type="submit">Cập nhật đơn hàng</button>
+                </form>
+            </div>
         </div>
     </div>
-
 </body>
 
 </html>

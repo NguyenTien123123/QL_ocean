@@ -420,6 +420,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <th>Tên sản phẩm</th>
                         <th>Số lượng</th>
                         <th>Giá nhập</th>
+                        <th>Tổng tiền</th>
                     </tr>
                     <?php foreach ($orderDetails as $item) { ?>
                         <tr>
