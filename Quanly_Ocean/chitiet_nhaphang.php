@@ -55,12 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Thêm lại chi tiết nhập hàng mới
     foreach ($_POST['SPID'] as $key => $spid) {
         $soluong = $_POST['SoLuong'][$key];
-        $gia = $_POST['Gia'][$key];
+        // Kiểm tra nếu không có giá được nhập, gán giá trị mặc định là 0
+        $gia = isset($_POST['Gia'][$key]) && $_POST['Gia'][$key] !== '' ? $_POST['Gia'][$key] : 0;
 
+        // Cập nhật chi tiết nhập hàng
         $queryInsertDetail = "INSERT INTO chitietnhaphang (NHID, SPID, SoLuong, Gia) VALUES (?, ?, ?, ?)";
         $stmtInsertDetail = $conn->prepare($queryInsertDetail);
         $stmtInsertDetail->execute([$nhid, $spid, $soluong, $gia]);
     }
+
 
     // Redirect hoặc thông báo thành công
     header("Location: quanly_nhaphang.php");
@@ -344,18 +347,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <label for="TongTien">Tổng tiền:</label>
                     <input type="number" id="TongTien" name="TongTien" value="<?= $existingTongTien ?>" required>
 
-                    <h4>Chọn sản phẩm</h4>
-                    <div class="product-selection">
+                    <label for="selectProduct">Chọn sản phẩm:</label>
+                    <select id="selectProduct">
+                        <option value="">-- Chọn sản phẩm --</option>
                         <?php foreach ($sanphamList as $sp) { ?>
-                            <div>
-                                <input type="checkbox" class="product-checkbox" data-id="<?= $sp['SPID'] ?>"
-                                    data-name="<?= $sp['TenSP'] ?>" data-price="<?= $sp['Gia'] ?>">
-                                <label><?= $sp['TenSP'] ?></label>
-                            </div>
+                            <option value="<?= $sp['SPID'] ?>" data-name="<?= $sp['TenSP'] ?>" data-gia="<?= $sp['Gia'] ?>">
+                                <?= $sp['TenSP'] ?>
+                            </option>
                         <?php } ?>
-                    </div>
-                    <h3>Danh sách sản phẩm đã chọn</h3>
-                    <table id="selected-products">
+                    </select>
+
+                    <table id="selectedProducts">
                         <tr>
                             <th>Tên sản phẩm</th>
                             <th>Số lượng</th>
@@ -363,6 +365,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <th>Hành động</th>
                         </tr>
                     </table>
+
+                    <script>
+                        document.getElementById('selectProduct').addEventListener('change', function () {
+                            let select = this;
+                            let selectedOption = select.options[select.selectedIndex];
+
+                            if (selectedOption.value) {
+                                let table = document.getElementById('selectedProducts');
+                                let row = table.insertRow(-1);
+                                row.innerHTML = `
+            <td>${selectedOption.dataset.name}
+                <input type="hidden" name="SPID[]" value="${selectedOption.value}">
+            </td>
+            <td><input type="number" name="SoLuong[]" value="1" required></td>
+            <td><input type="number" name="Gia[]" value="${selectedOption.dataset.gia}" required></td>
+            <td><button type="button" onclick="this.parentElement.parentElement.remove()">Xóa</button></td>
+        `;
+                                select.selectedIndex = 0;
+                            }
+                        });
+                    </script>
 
                     <button type="submit">Cập nhật đơn hàng</button>
                 </form>
@@ -392,19 +415,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmtDetails->execute([$nhid]);
                     $orderDetails = $stmtDetails->fetchAll(PDO::FETCH_ASSOC);
                     ?>
-
                     <tr>
                         <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
                         <th>Số lượng</th>
-                        <th>Giá</th>
+                        <th>Giá nhập</th>
                     </tr>
                     <?php foreach ($orderDetails as $item) { ?>
                         <tr>
                             <td><?= $item['SPID'] ?></td>
                             <td><?= $item['TenSP'] ?></td>
                             <td><?= $item['SoLuong'] ?></td>
-                            <td><?= number_format($item['Gia'], 0) ?> VNĐ</td>
+                            <td><input type="number" name="Gia[]" value="<?= $item['Gia'] ?>" required></td>
                         </tr>
                     <?php } ?>
                 </table>
