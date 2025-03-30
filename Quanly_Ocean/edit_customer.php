@@ -171,7 +171,7 @@ if (isset($_GET['id'])) {
 
 <body>
 
-    <h2>Hệ thống</h2>
+    <h2>Quản lý Khách Hàng</h2>
 
     <div class="container">
         <div class="menu">

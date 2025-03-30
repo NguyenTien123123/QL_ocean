@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-    <h2>Hệ thống</h2>
+    <h2>Quản lý Sản Phẩm</h2>
 
     <div class="container">
         <div class="menu">

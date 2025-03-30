@@ -169,7 +169,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-    <h2>Hệ thống</h2>
+    <h2>Quản lý Nhà Cung Cấp</h2>
 
     <div class="container">
         <div class="menu">
@@ -187,7 +187,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div id="content">
             <div class="left-panel">
-                <h2>Quản lý Nhà Cung Cấp</h2>
+                <h2>Danh sách Nhà Cung Cấp</h2>
 
                 <!-- Hiển thị thông báo nếu thêm nhà cung cấp thành công -->
                 <?php

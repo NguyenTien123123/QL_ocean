@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-    <h2>Hệ thống</h2>
+    <h2>Quản lý Nhân viên</h2>
 
     <div class="container">
         <div class="menu">
@@ -214,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div id="content">
             <!-- Phần danh sách nhân viên -->
             <div class="left-panel">
-                <h2>Quản lý Nhân viên</h2>
+                <h2>Danh sách Nhân viên</h2>
                 <table>
                     <tr>
                         <th>ID</th>

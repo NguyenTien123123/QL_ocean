@@ -159,7 +159,7 @@ if (isset($_GET['id'])) {
 
 <body>
 
-    <h2>Hệ thống</h2>
+    <h2>Quản lý Nhà Cung Cấp</h2>
 
     <div class="container">
         <div class="menu">

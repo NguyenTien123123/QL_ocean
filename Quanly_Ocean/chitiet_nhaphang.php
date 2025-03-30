@@ -304,7 +304,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <body>
 
-    <h2>Nhập đơn hàng mới</h2>
+    <h2>Chi tiết nhập hàng</h2>
 
     <div class="container">
         <div class="menu">

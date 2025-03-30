@@ -185,7 +185,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
 
 <body>
 
-    <h2>Hệ thống</h2>
+    <h2>Quản lý Sản phẩm</h2>
 
     <div class="container">
         <div class="menu">
@@ -204,7 +204,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
         <div id="content">
             <!-- Phần danh sách sản phẩm -->
             <div class="left-panel">
-                <h2>Quản lý Sản phẩm</h2>
+                <h2>Danh sách Sản phẩm</h2>
                 <table>
                     <tr>
                         <th>ID</th>
