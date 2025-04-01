@@ -100,25 +100,28 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
             display: flex;
         }
 
-        /* Phần chia khung ở giữa */
         .left-panel {
-            width: 70%;
-            /* Điều chỉnh phần này chiếm 70% */
+            width: 75%;
+            /* Phần bên trái chiếm 75% */
             background-color: #333;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+            max-height: 100vh;
+            overflow-y: auto;
         }
 
         .right-panel {
             width: 25%;
-            /* Điều chỉnh phần này chiếm 25% */
+            /* Phần bên phải chiếm 25% */
             background: #222;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
             color: white;
             margin-left: 20px;
+            overflow-y: auto;
+            max-height: 70vh;
         }
 
         table {
@@ -180,6 +183,29 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
         a:hover {
             text-decoration: underline;
         }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            #content {
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            .menu {
+                width: 100%;
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .left-panel,
+            .right-panel {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 
@@ -205,55 +231,92 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
             <!-- Phần danh sách sản phẩm -->
             <div class="left-panel">
                 <h2>Danh sách Sản phẩm</h2>
-                <table>
+                <table border="1">
                     <tr>
                         <th>ID</th>
                         <th>Tên sản phẩm</th>
-                        <th>Giá</th>
+                        <th>Giá VIP 1</th>
+                        <th>Giá VIP 2</th>
+                        <th>SL 1-5</th>
+                        <th>SL 6-16</th>
+                        <th>SL 16-50</th>
+                        <th>SL 51-100</th>
+                        <th>SL 101-200</th>
+                        <th>SL 201-300</th>
+                        <th>SL 301-400</th>
+                        <th>SL 400-1000</th>
                         <th>Số lượng</th>
                         <th>Mô tả</th>
                         <th>Hành động</th>
                     </tr>
-                    <?php if ($products): ?>
-                        <?php foreach ($products as $row) { ?>
-                            <tr>
-                                <td><?= $row['SPID'] ?></td>
-                                <td><?= $row['TenSP'] ?></td>
-                                <td><?= number_format($row['Gia'], 0, ',', '.') ?> đ</td>
-                                <td><?= $row['SoLuong'] ?></td>
-                                <td><?= $row['MoTa'] ?></td>
-                                <td><a href="edit_product.php?id=<?= $row['SPID'] ?>">Sửa</a></td>
-                            </tr>
-                        <?php } ?>
-                    <?php else: ?>
+                    <?php foreach ($products as $row) { ?>
+
                         <tr>
-                            <td colspan="6">Không có sản phẩm nào!</td>
+                            <td><?= $row['SPID'] ?></td>
+                            <td><?= $row['TenSP'] ?></td>
+                            <td><?= number_format($row['gia_vip_1'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_vip_2'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl1_5'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl6_16'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl16_50'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl51_100'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl101_200'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl201_300'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl301_400'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl400_1000'], 0, ',', '.') ?> đ</td>
+                            <td><?= $row['SoLuong'] ?></td>
+                            <td><?= $row['MoTa'] ?></td>
+                            <td><a href="edit_product.php?id=<?= $row['SPID'] ?>">Sửa</a></td>
                         </tr>
-                    <?php endif; ?>
+                    <?php } ?>
                 </table>
             </div>
+            <div>
 
-            <!-- Phần thêm sản phẩm -->
-            <div class="right-panel">
-                <h2>Thêm Sản Phẩm Mới</h2>
-                <form method="POST" action="add_product.php">
-                    <label for="TenSP">Tên sản phẩm:</label>
-                    <input type="text" id="TenSP" name="TenSP" required>
+                <h2>Thêm sản phẩm mới</h2>
+                <form action="add_product.php" method="post">
+                    <label>Tên sản phẩm:</label>
+                    <input type="text" name="TenSP" required>
 
-                    <label for="Gia">Giá:</label>
-                    <input type="number" id="Gia" name="Gia" required>
+                    <label>Giá VIP 1:</label>
+                    <input type="number" name="gia_vip1" required>
 
-                    <label for="SoLuong">Số lượng:</label>
-                    <input type="number" id="SoLuong" name="SoLuong" required>
+                    <label>Giá VIP 2:</label>
+                    <input type="number" name="gia_vip2" required>
 
-                    <label for="MoTa">Mô tả:</label>
-                    <textarea id="MoTa" name="MoTa" required></textarea>
+                    <label>Giá SL 1-5:</label>
+                    <input type="number" name="gia_sl1_5" required>
+
+                    <label>Giá SL 6-16:</label>
+                    <input type="number" name="gia_sl6_16" required>
+
+                    <label>Giá SL 16-50:</label>
+                    <input type="number" name="gia_sl16_50" required>
+
+                    <label>Giá SL 51-100:</label>
+                    <input type="number" name="gia_sl51_100" required>
+
+                    <label>Giá SL 101-200:</label>
+                    <input type="number" name="gia_sl101_200" required>
+
+                    <label>Giá SL 201-300:</label>
+                    <input type="number" name="gia_sl201_300" required>
+
+                    <label>Giá SL 301-400:</label>
+                    <input type="number" name="gia_sl301_400" required>
+
+                    <label>Giá SL 400-1000:</label>
+                    <input type="number" name="gia_sl400_1000" required>
+
+                    <label>Số lượng:</label>
+                    <input type="number" name="SoLuong" required>
+
+                    <label>Mô tả:</label>
+                    <textarea name="MoTa" required></textarea>
 
                     <button type="submit">Thêm sản phẩm</button>
                 </form>
             </div>
-        </div>
-    </div>
 
 </body>
 

@@ -21,14 +21,47 @@ if (!$product) {
 // Xử lý khi người dùng gửi form sửa sản phẩm
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $TenSP = $_POST['TenSP'];
-    $Gia = $_POST['Gia'];
+    $gia_vip_1 = $_POST['gia_vip_1'];
+    $gia_vip_2 = $_POST['gia_vip_2'];
+    $gia_sl1_5 = $_POST['gia_sl1_5'];
+    $gia_sl6_16 = $_POST['gia_sl6_16'];
+    $gia_sl16_50 = $_POST['gia_sl16_50'];
+    $gia_sl51_100 = $_POST['gia_sl51_100'];
+    $gia_sl101_200 = $_POST['gia_sl101_200'];
+    $gia_sl201_300 = $_POST['gia_sl201_300'];
+    $gia_sl301_400 = $_POST['gia_sl301_400'];
+    $gia_sl400_1000 = $_POST['gia_sl400_1000'];
     $SoLuong = $_POST['SoLuong'];
     $MoTa = $_POST['MoTa'];
 
-    $query = "UPDATE sanpham SET TenSP = :TenSP, Gia = :Gia, SoLuong = :SoLuong, MoTa = :MoTa WHERE SPID = :SPID";
+    $query = "UPDATE sanpham SET 
+                TenSP = :TenSP, 
+                gia_vip_1 = :gia_vip_1, 
+                gia_vip_2 = :gia_vip_2, 
+                gia_sl1_5 = :gia_sl1_5, 
+                gia_sl6_16 = :gia_sl6_16, 
+                gia_sl16_50 = :gia_sl16_50, 
+                gia_sl51_100 = :gia_sl51_100, 
+                gia_sl101_200 = :gia_sl101_200, 
+                gia_sl201_300 = :gia_sl201_300, 
+                gia_sl301_400 = :gia_sl301_400, 
+                gia_sl400_1000 = :gia_sl400_1000, 
+                SoLuong = :SoLuong, 
+                MoTa = :MoTa 
+              WHERE SPID = :SPID";
+    
     $stmt = $conn->prepare($query);
     $stmt->bindParam(':TenSP', $TenSP);
-    $stmt->bindParam(':Gia', $Gia);
+    $stmt->bindParam(':gia_vip_1', $gia_vip_1);
+    $stmt->bindParam(':gia_vip_2', $gia_vip_2);
+    $stmt->bindParam(':gia_sl1_5', $gia_sl1_5);
+    $stmt->bindParam(':gia_sl6_16', $gia_sl6_16);
+    $stmt->bindParam(':gia_sl16_50', $gia_sl16_50);
+    $stmt->bindParam(':gia_sl51_100', $gia_sl51_100);
+    $stmt->bindParam(':gia_sl101_200', $gia_sl101_200);
+    $stmt->bindParam(':gia_sl201_300', $gia_sl201_300);
+    $stmt->bindParam(':gia_sl301_400', $gia_sl301_400);
+    $stmt->bindParam(':gia_sl400_1000', $gia_sl400_1000);
     $stmt->bindParam(':SoLuong', $SoLuong);
     $stmt->bindParam(':MoTa', $MoTa);
     $stmt->bindParam(':SPID', $SPID);
@@ -182,8 +215,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="TenSP">Tên sản phẩm:</label>
                 <input type="text" id="TenSP" name="TenSP" value="<?= $product['TenSP'] ?>" required>
 
-                <label for="Gia">Giá:</label>
-                <input type="number" id="Gia" name="Gia" value="<?= $product['Gia'] ?>" required>
+                <label for="gia_vip_1">Giá VIP 1:</label>
+                <input type="number" id="gia_vip_1" name="gia_vip_1" value="<?= $product['gia_vip_1'] ?>" required>
+
+                <label for="gia_vip_2">Giá VIP 2:</label>
+                <input type="number" id="gia_vip_2" name="gia_vip_2" value="<?= $product['gia_vip_2'] ?>" required>
+
+                <label for="gia_sl1_5">Giá SL 1-5:</label>
+                <input type="number" id="gia_sl1_5" name="gia_sl1_5" value="<?= $product['gia_sl1_5'] ?>" required>
+
+                <label for="gia_sl6_16">Giá SL 6-16:</label>
+                <input type="number" id="gia_sl6_16" name="gia_sl6_16" value="<?= $product['gia_sl6_16'] ?>" required>
+
+                <label for="gia_sl16_50">Giá SL 16-50:</label>
+                <input type="number" id="gia_sl16_50" name="gia_sl16_50" value="<?= $product['gia_sl16_50'] ?>" required>
+
+                <label for="gia_sl51_100">Giá SL 51-100:</label>
+                <input type="number" id="gia_sl51_100" name="gia_sl51_100" value="<?= $product['gia_sl51_100'] ?>" required>
+
+                <label for="gia_sl101_200">Giá SL 101-200:</label>
+                <input type="number" id="gia_sl101_200" name="gia_sl101_200" value="<?= $product['gia_sl101_200'] ?>" required>
+
+                <label for="gia_sl201_300">Giá SL 201-300:</label>
+                <input type="number" id="gia_sl201_300" name="gia_sl201_300" value="<?= $product['gia_sl201_300'] ?>" required>
+
+                <label for="gia_sl301_400">Giá SL 301-400:</label>
+                <input type="number" id="gia_sl301_400" name="gia_sl301_400" value="<?= $product['gia_sl301_400'] ?>" required>
+
+                <label for="gia_sl400_1000">Giá SL 400-1000:</label>
+                <input type="number" id="gia_sl400_1000" name="gia_sl400_1000" value="<?= $product['gia_sl400_1000'] ?>" required>
 
                 <label for="SoLuong">Số lượng:</label>
                 <input type="number" id="SoLuong" name="SoLuong" value="<?= $product['SoLuong'] ?>" required>
