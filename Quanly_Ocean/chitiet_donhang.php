@@ -76,54 +76,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmtInsertDetail = $conn->prepare($queryInsertDetail);
         $stmtInsertDetail->execute([$dhid, $spid, $soluong, $gia]);
     }
+    if (isset($_POST['sanpham_id'])) {
+        $sanpham_id = $_POST['sanpham_id'];
+
+        $query = "SELECT gia_vip_1, gia_vip_2, gia_sl1_5, gia_sl6_16, gia_sl16_50, gia_sl51_100, gia_sl101_200, gia_sl201_300, gia_sl301_400, gia_sl400_1000 FROM sanpham WHERE SPID = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->execute([$sanpham_id]);
+
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            echo json_encode($row);
+        }
+        exit;
+    }
+
     // Redirect hoặc thông báo thành công
     header("Location: quanly_banhang.php");
     exit;
+
+
 }
+
 ?>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const selectProduct = document.getElementById("selectProduct");
         const selectedTable = document.getElementById("selectedProducts");
+        const giaOption = document.getElementById("giaOption");
 
+        // Cập nhật giá theo mức giá khi thay đổi option
+        giaOption.addEventListener("change", function () {
+            const selectedGia = this.value;
+
+            // Cập nhật data-gia cho từng option theo mức giá được chọn
+            const options = selectProduct.options;
+            for (let i = 0; i < options.length; i++) {
+                const option = options[i];
+                if (option.dataset[selectedGia]) {
+                    option.setAttribute("data-gia", option.dataset[selectedGia]);
+                }
+            }
+        });
+
+        // Thêm sản phẩm vào bảng chi tiết
         selectProduct.addEventListener("change", function () {
             const selectedOption = this.options[this.selectedIndex];
             const productId = selectedOption.value;
             const productName = selectedOption.getAttribute("data-name");
             const productPrice = selectedOption.getAttribute("data-gia");
 
-            // Kiểm tra nếu sản phẩm đã được chọn
+            if (!productId) return;
+
             if (document.getElementById("row-" + productId)) {
                 alert("Sản phẩm này đã có trong danh sách!");
-                return; // Không thêm nếu sản phẩm đã tồn tại
+                return;
             }
 
-            if (productId) {
-                // Thêm sản phẩm vào bảng
-                let row = document.createElement("tr");
-                row.setAttribute("id", "row-" + productId);
-                row.innerHTML = `
-                <td>${productName}</td>
-                <td><input type="number" name="SoLuong[]" value="1" min="1" required></td>
-                <td><input type="number" name="Gia[]" value="${productPrice}" readonly required></td>
-                <td><button type="button" onclick="removeProduct('${productId}')">Xóa</button></td>
-                <input type="hidden" name="SPID[]" value="${productId}">
-            `;
-                selectedTable.appendChild(row);
-                // Cập nhật lại tổng tiền khi thêm sản phẩm
-                updateTotalAmount();
-            }
+            let row = document.createElement("tr");
+            row.setAttribute("id", "row-" + productId);
+            row.innerHTML = `
+            <td>${productName}</td>
+            <td><input type="number" name="SoLuong[]" value="1" min="1" required></td>
+            <td><input type="number" name="Gia[]" value="${productPrice}" required></td>
+            <td><button type="button" onclick="removeProduct('${productId}')">Xóa</button></td>
+            <input type="hidden" name="SPID[]" value="${productId}">
+        `;
+            selectedTable.appendChild(row);
+            updateTotalAmount();
         });
 
-        function removeProduct(productId) {
-            // Xóa sản phẩm khỏi bảng
+        window.removeProduct = function (productId) {
             document.getElementById("row-" + productId)?.remove();
-            // Cập nhật lại tổng tiền khi xóa sản phẩm
             updateTotalAmount();
         }
 
-        // Cập nhật lại tổng tiền sau khi thêm hoặc xóa sản phẩm
         function updateTotalAmount() {
             let totalAmount = 0;
             const rows = document.querySelectorAll("#selectedProducts tr");
@@ -134,66 +160,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     totalAmount += quantity * price;
                 }
             });
-            // Cập nhật giá trị tổng tiền vào input
             document.getElementById("TongTien").value = totalAmount;
         }
     });
 
-    // document.addEventListener("DOMContentLoaded", function () {
-    //     const selectProduct = document.getElementById("selectProduct");
-    //     const selectedTable = document.getElementById("selectedProducts");
-
-    //     selectProduct.addEventListener("change", function () {
-    //         const selectedOption = this.options[this.selectedIndex];
-    //         const productId = selectedOption.value;
-    //         const productName = selectedOption.getAttribute("data-name");
-    //         const productPrice = selectedOption.getAttribute("data-gia");
-
-    //         // Kiểm tra nếu sản phẩm đã được chọn
-    //         if (document.getElementById("row-" + productId)) {
-    //             alert("Sản phẩm này đã có trong danh sách!");
-    //             return; // Không thêm nếu sản phẩm đã tồn tại
-    //         }
-
-    //         if (productId) {
-    //             // Thêm sản phẩm vào bảng
-    //             let row = document.createElement("tr");
-    //             row.setAttribute("id", "row-" + productId);
-    //             row.innerHTML = `
-    //         <td>${productName}</td>
-    //         <td><input type="number" name="SoLuong[]" value="1" min="1" required></td>
-    //         <td><input type="number" name="Gia[]" value="${productPrice}" readonly required></td>
-    //         <td><button type="button" onclick="removeProduct('${productId}')">Xóa</button></td>
-    //         <input type="hidden" name="SPID[]" value="${productId}">
-    //     `;
-    //             selectedTable.appendChild(row);
-    //         }
-    //     });
-    //     function removeProduct(productId) {
-    //         // Xóa sản phẩm khỏi bảng
-    //         document.getElementById("row-" + productId)?.remove();
-    //         // Cập nhật lại tổng tiền khi xóa sản phẩm
-    //         updateTotalAmount();
-    //     }
-
-    //     // Cập nhật lại tổng tiền sau khi xóa
-    //     function updateTotalAmount() {
-    //         let totalAmount = 0;
-    //         const rows = document.querySelectorAll("#selectedProducts tr");
-    //         rows.forEach(row => {
-    //             const quantity = row.querySelector("input[name='SoLuong[]']").value;
-    //             const price = row.querySelector("input[name='Gia[]']").value;
-    //             if (quantity && price) {
-    //                 totalAmount += quantity * price;
-    //             }
-    //         });
-    //         // Cập nhật giá trị tổng tiền vào input
-    //         document.getElementById("TongTien").value = totalAmount;
-    //     }
-
-    // });
-
 </script>
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -413,68 +385,73 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <label for="TongTien">Tổng tiền:</label>
                     <input type="number" id="TongTien" name="TongTien" value="<?= $existingTongTien ?>" required>
+                    <!-- Mức giá -->
+                    <div style="margin-bottom: 10px;">
+                        <label for="giaOption"><strong>Chọn mức giá:</strong></label>
+                        <select id="giaOption" name="giaOption" style="padding: 5px; min-width: 200px;">
+                            <option value="gia_vip_1">VIP 1</option>
+                            <option value="gia_vip_2">VIP 2</option>
+                            <option value="gia_sl1_5">SL 1-5</option>
+                            <option value="gia_sl6_16">SL 6-16</option>
+                            <option value="gia_sl16_50">SL 16-50</option>
+                            <option value="gia_sl51_100">SL 51-100</option>
+                            <option value="gia_sl101_200">SL 101-200</option>
+                            <option value="gia_sl201_300">SL 201-300</option>
+                            <option value="gia_sl301_400">SL 301-400</option>
+                            <option value="gia_sl400_1000">SL 400-1000</option>
+                        </select>
+                    </div>
 
-                    <label for="selectProduct">Chọn sản phẩm:</label>
-                    <select id="selectProduct">
-                        <option value="">-- Chọn sản phẩm --</option>
-                        <?php foreach ($sanphamList as $sp) { ?>
-                            <option value="<?= $sp['SPID'] ?>" data-name="<?= $sp['TenSP'] ?>" data-gia="<?= $sp['Gia'] ?>">
-                                <?= $sp['TenSP'] ?>
-                            </option>
-                        <?php } ?>
-                    </select>
+                    <!-- Sản phẩm -->
+                    <div style="margin-bottom: 10px;">
+                        <label for="selectProduct"><strong>Chọn sản phẩm:</strong></label>
+                        <select id="selectProduct" name="selectProduct" style="padding: 5px; min-width: 300px;">
+                            <option value="">-- Chọn sản phẩm --</option>
+                            <?php foreach ($sanphamList as $sp): ?>
+                                <option value="<?= $sp['SPID'] ?>" data-name="<?= htmlspecialchars($sp['TenSP']) ?>"
+                                    data-gia_vip_1="<?= $sp['gia_vip_1'] ?>" data-gia_vip_2="<?= $sp['gia_vip_2'] ?>"
+                                    data-gia_sl1_5="<?= $sp['gia_sl1_5'] ?>" data-gia_sl6_16="<?= $sp['gia_sl6_16'] ?>"
+                                    data-gia_sl16_50="<?= $sp['gia_sl16_50'] ?>"
+                                    data-gia_sl51_100="<?= $sp['gia_sl51_100'] ?>"
+                                    data-gia_sl101_200="<?= $sp['gia_sl101_200'] ?>"
+                                    data-gia_sl201_300="<?= $sp['gia_sl201_300'] ?>"
+                                    data-gia_sl301_400="<?= $sp['gia_sl301_400'] ?>"
+                                    data-gia_sl400_1000="<?= $sp['gia_sl400_1000'] ?>" data-gia="<?= $sp['gia_vip_1'] ?>"
+                                    <!-- mặc định là VIP 1 -->
+                                    >
+                                    <?= htmlspecialchars($sp['TenSP']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-                    <table id="selectedProducts">
-                        <tr>
-                            <th>Tên sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Giá bán</th>
-                            <th>Hành động</th>
-                        </tr>
-                        <?php foreach ($orderDetails as $detail) { ?>
-                            <tr id="row-<?= $detail['SPID'] ?>">
-                                <td><?= $detail['TenSP'] ?></td>
-                                <td><input type="number" name="SoLuong[]" value="<?= $detail['SoLuong'] ?>" min="1"
-                                        required></td>
-                                <td><input type="number" name="Gia[]" value="<?= $detail['Gia'] ?>" readonly required></td>
-                                <td><button type="button" onclick="removeProduct('<?= $detail['SPID'] ?>')">Xóa</button>
-                                </td>
-                                <input type="hidden" name="SPID[]" value="<?= $detail['SPID'] ?>">
-                            </tr>
-                        <?php } ?>
-                    </table>
-
-                    <h3>Danh sách sản phẩm trong đơn hàng</h3>
-                    <table id="orderProductsTable">
+                    <h3>Sản phẩm đã chọn:</h3>
+                    <table>
                         <thead>
                             <tr>
-                                <th>STT</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
-                                <th>Giá bán</th>
-                                <th>Tổng tiền</th>
+                                <th>Giá</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php
-                            $index = 1;
-                            $addedProductIds = []; // Mảng để lưu các SPID đã được thêm vào
-                            foreach ($orderDetails as $detail) {
-                                if (!in_array($detail['SPID'], $addedProductIds)) {
-                                    $totalPrice = $detail['SoLuong'] * $detail['Gia'];
-                                    $addedProductIds[] = $detail['SPID']; // Lưu SPID đã thêm vào
-                                    ?>
-                                    <tr>
-                                        <td><?= $index++ ?></td>
-                                        <td><?= $detail['TenSP'] ?></td>
-                                        <td><?= $detail['SoLuong'] ?></td>
-                                        <td><?= number_format($detail['Gia'], 0, ',', '.') ?> VND</td>
-                                        <td><?= number_format($totalPrice, 0, ',', '.') ?> VND</td>
-                                    </tr>
-                                    <?php
-                                }
-                            }
-                            ?>
+                        <tbody id="selectedProducts">
+                            <?php foreach ($orderDetails as $detail) { ?>
+                                <tr id="row-<?= $detail['SPID'] ?>">
+                                    <td><?= htmlspecialchars($detail['TenSP']) ?></td>
+                                    <td>
+                                        <input type="number" name="SoLuong[]" value="<?= $detail['SoLuong'] ?>" min="1"
+                                            required>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="Gia[]" value="<?= $detail['Gia'] ?>" required readonly>
+                                    </td>
+                                    <td>
+                                        <button type="button" onclick="removeProduct('<?= $detail['SPID'] ?>')">Xóa</button>
+                                    </td>
+                                    <input type="hidden" name="SPID[]" value="<?= $detail['SPID'] ?>">
+                                </tr>
+                            <?php } ?>
                         </tbody>
                     </table>
                     <button type="submit">Cập nhật đơn hàng</button>
