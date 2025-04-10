@@ -101,7 +101,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
         }
 
         .left-panel {
-            width: 75%;
+            width: 100%;
             /* Phần bên trái chiếm 75% */
             background-color: #333;
             border-radius: 10px;
@@ -235,9 +235,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
                     <tr>
                         <th>ID</th>
                         <th>Tên sản phẩm</th>
+                        <th>Giá VIP 1A</th>
                         <th>Giá VIP 1</th>
                         <th>Giá VIP 2</th>
-                        <th>SL 1-5</th>
+                        <th>SL 1</th>
+                        <th>SL 2</th>
+                        <th>SL 3-4</th>
+                        <th>SL 5</th>
                         <th>SL 6-16</th>
                         <th>SL 16-50</th>
                         <th>SL 51-100</th>
@@ -254,8 +258,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
                         <tr>
                             <td><?= $row['SPID'] ?></td>
                             <td><?= $row['TenSP'] ?></td>
+                            <td><?= number_format($row['gia_vip_1A'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_vip_1'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_vip_2'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl1'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl2'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl3_4'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl5'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl1_5'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl6_16'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl16_50'], 0, ',', '.') ?> đ</td>
@@ -271,7 +280,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
                     <?php } ?>
                 </table>
             </div>
-            <div>
+            <!-- <div>
 
                 <h2>Thêm sản phẩm mới</h2>
                 <form action="add_product.php" method="post">
@@ -316,7 +325,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
 
                     <button type="submit">Thêm sản phẩm</button>
                 </form>
-            </div>
+            </div> -->
 
 </body>
 
