@@ -230,7 +230,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
         <div id="content">
             <!-- Phần danh sách sản phẩm -->
             <div class="left-panel">
-                <h2>Danh sách Sản phẩm</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Danh sách Sản phẩm</h2>
+                    <div>
+                        <button onclick="window.location.href='import_sanpham.php'">Import</button>
+                        <button onclick="window.location.href='export_sanpham.php'">Export</button>
+                    </div>
+                </div>
                 <table border="1">
                     <tr>
                         <th>ID</th>
