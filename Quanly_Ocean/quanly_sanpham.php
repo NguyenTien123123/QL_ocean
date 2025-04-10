@@ -265,7 +265,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
                             <td><?= number_format($row['gia_sl2'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl3_4'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl5'], 0, ',', '.') ?> đ</td>
-                            <td><?= number_format($row['gia_sl1_5'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl6_16'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl16_50'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl51_100'], 0, ',', '.') ?> đ</td>
