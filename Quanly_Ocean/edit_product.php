@@ -24,10 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gia_vip_1A = $_POST['gia_vip_1A'];
     $gia_vip_1 = $_POST['gia_vip_1'];
     $gia_vip_2 = $_POST['gia_vip_2'];
-    $gia_sl1 = $_POST['gia_sl1'];
-    $gia_sl2 = $_POST['gia_sl2'];
-    $gia_sl3_4 = $_POST['gia_sl3_4'];
-    $gia_sl5 = $_POST['gia_sl5'];
+    $gia_sl1_5 = $_POST['gia_sl1_5'];
     $gia_sl6_16 = $_POST['gia_sl6_16'];
     $gia_sl16_50 = $_POST['gia_sl16_50'];
     $gia_sl51_100 = $_POST['gia_sl51_100'];
@@ -43,10 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 gia_vip_1A = :gia_vip_1A,
                 gia_vip_1 = :gia_vip_1, 
                 gia_vip_2 = :gia_vip_2, 
-                gia_sl1 = :gia_sl1, 
-                gia_sl2 = :gia_sl2,
-                gia_sl3_4 = :gia_sl3_4, 
-                gia_sl5 = :gia_sl5, 
+                gia_sl1_5 = :gia_sl1_5, 
                 gia_sl6_16 = :gia_sl6_16, 
                 gia_sl16_50 = :gia_sl16_50, 
                 gia_sl51_100 = :gia_sl51_100, 
@@ -63,10 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':gia_vip_1A', $gia_vip_1A);
     $stmt->bindParam(':gia_vip_1', $gia_vip_1);
     $stmt->bindParam(':gia_vip_2', $gia_vip_2);
-    $stmt->bindParam(':gia_sl1', $gia_sl1);
-    $stmt->bindParam(':gia_sl2', $gia_sl2);
-    $stmt->bindParam(':gia_sl3_4', $gia_sl3_4);
-    $stmt->bindParam(':gia_sl5', $gia_sl5);
+    $stmt->bindParam(':gia_sl1_5', $gia_sl1_5);
     $stmt->bindParam(':gia_sl6_16', $gia_sl6_16);
     $stmt->bindParam(':gia_sl16_50', $gia_sl16_50);
     $stmt->bindParam(':gia_sl51_100', $gia_sl51_100);
@@ -236,17 +227,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="gia_vip_2">Giá VIP 2:</label>
                 <input type="number" id="gia_vip_2" name="gia_vip_2" value="<?= $product['gia_vip_2'] ?>" required>
 
-                <label for="gia_sl1">Giá SL 1:</label>
-                <input type="number" id="gia_sl1" name="gia_sl1" value="<?= $product['gia_sl1'] ?>" required>
-
-                <label for="gia_sl2">Giá SL 2:</label>
-                <input type="number" id="gia_sl2" name="gia_sl2" value="<?= $product['gia_sl2'] ?>" required>
-
-                <label for="gia_sl3_4">Giá SL 3-4:</label>
-                <input type="number" id="gia_sl3_4" name="gia_sl3_4" value="<?= $product['gia_sl3_4'] ?>" required>
-
-                <label for="gia_sl5">Giá SL 5:</label>
-                <input type="number" id="gia_sl5" name="gia_sl5" value="<?= $product['gia_sl5'] ?>" required>
+                <label for="gia_sl1_5">Giá SL 1-5:</label>
+                <input type="number" id="gia_sl1_5" name="gia_sl1_5" value="<?= $product['gia_sl1_5'] ?>" required>
 
                 <label for="gia_sl6_16">Giá SL 6-16:</label>
                 <input type="number" id="gia_sl6_16" name="gia_sl6_16" value="<?= $product['gia_sl6_16'] ?>" required>

@@ -244,10 +244,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
                         <th>Giá VIP 1A</th>
                         <th>Giá VIP 1</th>
                         <th>Giá VIP 2</th>
-                        <th>SL 1</th>
-                        <th>SL 2</th>
-                        <th>SL 3-4</th>
-                        <th>SL 5</th>
+                        <th>SL 1-5</th>
                         <th>SL 6-16</th>
                         <th>SL 16-50</th>
                         <th>SL 51-100</th>
@@ -267,10 +264,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);  // Lưu kết quả vào biến 
                             <td><?= number_format($row['gia_vip_1A'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_vip_1'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_vip_2'], 0, ',', '.') ?> đ</td>
-                            <td><?= number_format($row['gia_sl1'], 0, ',', '.') ?> đ</td>
-                            <td><?= number_format($row['gia_sl2'], 0, ',', '.') ?> đ</td>
-                            <td><?= number_format($row['gia_sl3_4'], 0, ',', '.') ?> đ</td>
-                            <td><?= number_format($row['gia_sl5'], 0, ',', '.') ?> đ</td>
+                            <td><?= number_format($row['gia_sl1_5'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl6_16'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl16_50'], 0, ',', '.') ?> đ</td>
                             <td><?= number_format($row['gia_sl51_100'], 0, ',', '.') ?> đ</td>

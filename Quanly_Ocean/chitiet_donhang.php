@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['sanpham_id'])) {
         $sanpham_id = $_POST['sanpham_id'];
 
-        $query = "SELECT gia_vip_1A, gia_vip_1, gia_vip_2, gia_sl1, gia_sl2, gia_sl3_4, gia_sl5, gia_sl6_16, gia_sl16_50, gia_sl51_100, gia_sl101_200, gia_sl201_300, gia_sl301_400, gia_sl400_1000 FROM sanpham WHERE SPID = ?";
+        $query = "SELECT gia_vip_1A, gia_vip_1, gia_vip_2, gia_sl1_5, gia_sl6_16, gia_sl16_50, gia_sl51_100, gia_sl101_200, gia_sl201_300, gia_sl301_400, gia_sl400_1000 FROM sanpham WHERE SPID = ?";
         $stmt = $conn->prepare($query);
         $stmt->execute([$sanpham_id]);
 
@@ -392,10 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <option value="gia_vip_1A">VIP 1A</option>
                             <option value="gia_vip_1">VIP 1</option>
                             <option value="gia_vip_2">VIP 2</option>
-                            <option value="gia_sl1">SL 1</option>
-                            <option value="gia_sl2">SL 2</option>
-                            <option value="gia_sl3_4">SL 3-4</option>
-                            <option value="gia_sl5">SL 5</option>
+                            <option value="gia_sl1_5">SL 1-5</option>
                             <option value="gia_sl6_16">SL 6-16</option>
                             <option value="gia_sl16_50">SL 16-50</option>
                             <option value="gia_sl51_100">SL 51-100</option>
@@ -414,10 +411,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <?php foreach ($sanphamList as $sp): ?>
                                 <option value="<?= $sp['SPID'] ?>" data-name="<?= htmlspecialchars($sp['TenSP']) ?>"
                                     data-gia_vip_1A="<?= $sp['gia_vip_1A'] ?>" data-gia_vip_1="<?= $sp['gia_vip_1'] ?>"
-                                    data-gia_vip_2="<?= $sp['gia_vip_2'] ?>" data-gia_sl1="<?= $sp['gia_sl1'] ?>"
-                                    data-gia_sl2="<?= $sp['gia_sl2'] ?>" data-gia_sl3_4="<?= $sp['gia_sl3_4'] ?>"
-                                    data-gia_sl5="<?= $sp['gia_sl5'] ?>" data-gia_sl6_16="<?= $sp['gia_sl6_16'] ?>"
-                                    data-gia_sl16_50="<?= $sp['gia_sl16_50'] ?>"
+                                    data-gia_vip_2="<?= $sp['gia_vip_2'] ?>" data-gia_sl1="<?= $sp['gia_sl1_5'] ?>"
+                                    data-gia_sl6_16="<?= $sp['gia_sl6_16'] ?>" data-gia_sl16_50="<?= $sp['gia_sl16_50'] ?>"
                                     data-gia_sl51_100="<?= $sp['gia_sl51_100'] ?>"
                                     data-gia_sl101_200="<?= $sp['gia_sl101_200'] ?>"
                                     data-gia_sl201_300="<?= $sp['gia_sl201_300'] ?>"
